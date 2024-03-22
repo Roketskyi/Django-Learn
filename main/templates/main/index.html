@@ -1,9 +1,32 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-  Головна сторінка
+  {{ title }}
 {% endblock %}
 
 {% block content %}
-  <h2>Головна сторінка</h2>
+  <h2 class="mt-4">Головна сторінка</h2>
+
+  <div class="row">
+    {% for el in News %}
+      <div class="col-md-4 mt-2">
+        <div class="card shadow-sm">
+          <img src="{{ el.image.url }}" class="bd-placeholder-img card-img-top img-fluid" height="225" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+          <div class="card-body">
+            <h5 class="card-title">{{ el.title }}</h5>
+            <p class="card-text">{{ el.content|truncatechars:100 }}</p>
+            <p class="card-text text-muted">Автор: {{ el.author }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+              </div>
+              <small class="text-muted">{{ el.created_at }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
 {% endblock %}
