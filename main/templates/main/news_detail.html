@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+  {{ news_item.title }}
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">{{ news_item.title }}</h2>
+        <p class="card-text">{{ news_item.content }}</p>
+        <p class="card-text"><strong>Автор:</strong> {{ news_item.author }}</p>
+        <p class="card-text"><strong>Дата публікації:</strong> {{ news_item.created_at }}</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
