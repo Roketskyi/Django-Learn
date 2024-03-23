@@ -17,9 +17,10 @@ class User(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
+    byte_content = models.TextField(null=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='news_images/')  # Поле для зображення
+    image = models.ImageField(upload_to='news_images/')
 
     def __str__(self):
         return self.title
