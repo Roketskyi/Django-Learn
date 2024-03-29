@@ -5,9 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <style>
-        /* Стили для курсора хрестика */
+        /* Стилі для курсора хрестика */
         input[type="search"]::-webkit-search-cancel-button {
             cursor: pointer;
+        }
+
+        /* Стилі для плавного з'явлення панелей */
+        .panel {
+            opacity: 0;
+            pointer-events: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            border: 3px solid #ccc;
+            border-radius: 5px;
+            z-index: 9999;
+            transition: opacity 3.3s ease;
+        }
+
+        /* Стилі для центрування тексту внутрішніх елементів */
+        .panel h4 {
+            text-align: center;
         }
     </style>
     <title>{% block title %}{% endblock %}</title>
@@ -33,28 +54,65 @@
             </form>
     
             <div class="text-end">
-              <button type="button" class="btn btn-outline-light me-2">Логін</button>
-              <button type="button" class="btn btn-warning">Реєстрація</button>
+              <button type="button" class="btn btn-outline-light me-2" onclick="togglePanel('loginPanel', 'registerPanel')">Логін</button>
+              <button type="button" class="btn btn-warning" onclick="togglePanel('registerPanel', 'loginPanel')">Реєстрація</button>
             </div>
           </div>
         </div>
-      </header>
+    </header>
       
-      <div class="container">
+    <div class="container">
         {% block content %}{% endblock %}
-      </div>
+    </div>
 
-      <div class="container">
+    <!-- панель логіна -->
+    <div id="loginPanel" class="panel">
+        <h4>Логін</h4>
+        <input type="text" placeholder="Логін"><br>
+        <input type="password" placeholder="Пароль"><br>
+        <button type="button">Увійти</button>
+    </div>
+
+    <!-- панель реєстрації -->
+    <div id="registerPanel" class="panel">
+        <h4>Реєстрація</h4>
+        <input type="text" placeholder="Ім'я"><br>
+        <input type="email" placeholder="Email"><br>
+        <input type="password" placeholder="Пароль"><br>
+        <input type="password" placeholder="Повторіть Пароль"><br>
+        <button type="button">Зареєструватися</button>
+    </div>
+
+    <div class="container">
         <footer class="py-3 my-4">
-          <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-            <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 text-body-secondary">Головна сторінка</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Запропонувати новину</a></li>
-            <li class="nav-item"><a href="{% url 'about' %}" class="nav-link px-2 text-body-secondary">Про нас</a></li>
-          </ul>
-          <p class="text-center text-body-secondary">© 2024 News, Inc</p>
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 text-body-secondary">Головна сторінка</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Запропонувати новину</a></li>
+                <li class="nav-item"><a href="{% url 'about' %}" class="nav-link px-2 text-body-secondary">Про нас</a></li>
+            </ul>
+            <p class="text-center text-body-secondary">© 2024 News, Inc</p>
         </footer>
-      </div>
+    </div>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- включіть Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- скрипт для плавного з'явлення панелей -->
+    <script>
+        function togglePanel(panelIdToShow, panelIdToHide) {
+            var panelToShow = document.getElementById(panelIdToShow);
+            var panelToHide = document.getElementById(panelIdToHide);
+            
+            if (panelToShow.style.opacity === "0") {
+                panelToShow.style.opacity = "1";
+                panelToShow.style.pointerEvents = "auto";
+                panelToHide.style.opacity = "0";
+                panelToHide.style.pointerEvents = "none";
+            } else {
+                panelToShow.style.opacity = "0";
+                panelToShow.style.pointerEvents = "none";
+            }
+        }
+    </script>
 </body>
 </html>

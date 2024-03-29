@@ -28,3 +28,14 @@ class News(models.Model):
     class Meta:
         verbose_name = 'Новину'
         verbose_name_plural = 'Новини'
+
+class Base(models.Model):
+    id = models.AutoField(primary_key=True)
+    login = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    email = models.EmailField()
+    role = models.CharField(max_length=50)
+    token = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.login
