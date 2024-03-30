@@ -35,7 +35,6 @@ class Base(models.Model):
     password = models.CharField(max_length=100)
     email = models.EmailField()
     role = models.CharField(max_length=50)
-    token = models.CharField(max_length=100)
 
     def __str__(self):
         return self.login

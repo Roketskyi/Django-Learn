@@ -10,9 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from dotenv import load_dotenv
-import os
+
+load_dotenv()
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Шлях до папки, де зберігаються статичні файли у вашому проекті
+STATIC_URL = 'static/'
+
+# Додайте шлях до папки, де розташовані ваші статичні файли
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 load_dotenv()
 
