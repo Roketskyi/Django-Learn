@@ -20,11 +20,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Шлях до папки, де зберігаються статичні файли у вашому проекті
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/static/'
 
 # Додайте шлях до папки, де розташовані ваші статичні файли
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 load_dotenv()
