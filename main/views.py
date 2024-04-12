@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import News, Base
 from django.contrib import messages
+from django.http import JsonResponse
 
 def index(request):
     news = News.objects.all()
@@ -25,6 +26,7 @@ def user_login(request):
         
         if user:
             request.session['user_id'] = user.id  # Збереження ID користувача в сесії
+            request.session['user_role'] = user.role  # Збереження ролі користувача в сесії
             return redirect('/')  # Redirect to home page
         else:
             messages.error(request, 'Невірний логін або пароль')
@@ -47,10 +49,8 @@ def user_register(request):
         if password == password_repeat:
             if Base.objects.filter(login=username).exists():
                 messages.error(request, 'Користувач з таким логіном вже існує.')
-                return redirect('register')
             elif Base.objects.filter(email=email).exists():
                 messages.error(request, 'Email вже використовується.')
-                return redirect('register')
             else:
                 # Шифрування пароля перед збереженням
                 user = Base(login=username, email=email, password=password, role='2')  # 'role' може бути змінено відповідно до вашої логіки
@@ -59,6 +59,31 @@ def user_register(request):
                 return redirect('/')
         else:
             messages.error(request, 'Паролі не співпадають.')
-            return redirect('register')
 
     return render(request, 'main/index.html')  # Виправлено повернення шаблону у випадку GET-запиту
+
+def admin_panel(request):
+    # Перевіряємо, чи є у користувача ID і роль в сесії
+    if request.session.get('user_id') and request.session.get('user_role') == '4':
+        return render(request, 'main/admin_panel.html')
+    else:
+        # Якщо у користувача немає ролі 4, перенаправляємо його на головну сторінку
+        return redirect('/')
+    
+def get_users(request):
+    if request.session.get('user_role') == '4':  # Перевірка ролі
+        users = Base.objects.all().values('id', 'login', 'email', 'role')
+        return JsonResponse(list(users), safe=False)
+    else:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+def delete_user(request, user_id):
+    if request.session.get('user_role') == '4':  # Перевірка ролі
+        try:
+            user = Base.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse({'success': 'Користувач видалений'})
+        except Base.DoesNotExist:
+            return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
+    else:
+        return JsonResponse({'error': 'Недозволено'}, status=401)

@@ -35,6 +35,10 @@
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZJg6b3NaaTsZ7yztN39I8jq53nuPbs2TJPwG6vmKf5wrseAIQX8JaLQLp_drxpCBQRMM&usqp=CAU" alt="mdo" width="32" height="32" class="rounded-circle">
                         </a>
                         <ul class="dropdown-menu text-small" style="position: absolute;">
+                            {% if request.session.user_role == '4' %}
+                                <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="#">Профіль</a></li>
                             <li><a class="dropdown-item" href="#">Налаштування</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -45,7 +49,7 @@
                     <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button>
                     {% endif %}
-                </div>                
+                </div>                               
             </div>
         </div>
     </header>
@@ -91,7 +95,7 @@
                     <form method="post" action="{% url 'user_register' %}">
                         {% csrf_token %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="register_username" id="floatingInput" placeholder="name@example.com">
+                            <input type="text" class="form-control" name="register_username" id="floatingInput" placeholder="Логін">
                             <label for="floatingInput">Логін</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -114,7 +118,15 @@
             </div>
         </div>
     </div>
-    <div class="container"> {% block content %}{% endblock %} </div>
+
+    <div class="container"> {% block content %}{% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}{% endblock %} </div>
 
     <footer class="py-3 my-4">
         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
