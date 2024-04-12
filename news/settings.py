@@ -28,7 +28,7 @@ STATICFILES_DIRS = [
 
 load_dotenv()
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

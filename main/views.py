@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import News, Base
 from django.contrib import messages
-from django.http import JsonResponse
 
 def index(request):
     news = News.objects.all()
@@ -37,3 +36,29 @@ def user_logout(request):
         del request.session['user_id']
         messages.success(request, "You have successfully logged out.")
     return redirect('/')
+
+def user_register(request):
+    if request.method == 'POST':
+        username = request.POST.get('register_username')
+        email = request.POST.get('register_email')
+        password = request.POST.get('register_password')
+        password_repeat = request.POST.get('register_password_repeat')
+
+        if password == password_repeat:
+            if Base.objects.filter(login=username).exists():
+                messages.error(request, 'Користувач з таким логіном вже існує.')
+                return redirect('register')
+            elif Base.objects.filter(email=email).exists():
+                messages.error(request, 'Email вже використовується.')
+                return redirect('register')
+            else:
+                # Шифрування пароля перед збереженням
+                user = Base(login=username, email=email, password=password, role='2')  # 'role' може бути змінено відповідно до вашої логіки
+                user.save()
+                messages.success(request, 'Реєстрація пройшла успішно!')
+                return redirect('/')
+        else:
+            messages.error(request, 'Паролі не співпадають.')
+            return redirect('register')
+
+    return render(request, 'main/index.html')  # Виправлено повернення шаблону у випадку GET-запиту

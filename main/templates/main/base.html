@@ -30,7 +30,17 @@
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search"> </form>
                 <div class="text-end">
                     {% if request.session.user_id %}
-                    <button type="button" class="btn btn-warning me-2" id="logoutButton" data-logout-url="{% url 'user_logout' %}">Вийти</button>
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZJg6b3NaaTsZ7yztN39I8jq53nuPbs2TJPwG6vmKf5wrseAIQX8JaLQLp_drxpCBQRMM&usqp=CAU" alt="mdo" width="32" height="32" class="rounded-circle">
+                        </a>
+                        <ul class="dropdown-menu text-small" style="position: absolute;">
+                            <li><a class="dropdown-item" href="#">Профіль</a></li>
+                            <li><a class="dropdown-item" href="#">Налаштування</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'user_logout' %}">Вийти</a></li>
+                        </ul>
+                    </div>
                     {% else %}
                     <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button>
@@ -44,19 +54,27 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Логін</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="loginModalLabel">Авторизація</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <form method="post" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <input type="text" class="form-control" name="login_username" placeholder="Логін">
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" name="login_password" placeholder="Пароль">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Увійти</button>
-                  </form>
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="login_username" id="floatingInput" placeholder="name@example.com">
+                            <label for="floatingInput">Логін</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="login_password" id="floatingPassword" placeholder="Пароль">
+                            <label for="floatingPassword">Пароль</label>
+                        </div>
+                        <div class="checkbox mb-3">
+                            <label>
+                                <input type="checkbox" value="remember-me"> Запам'ятати мене
+                            </label>
+                        </div>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Увійти</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -66,14 +84,31 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">Реєстрація</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="registerModalLabel">Реєстрація</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3"> <input type="text" class="form-control" id="register_name" placeholder="Ім'я"> </div>
-                        <div class="mb-3"> <input type="email" class="form-control" id="register_email" placeholder="Email"> </div>
-                        <div class="mb-3"> <input type="password" class="form-control" id="register_password" placeholder="Пароль"> </div>
-                        <div class="mb-3"> <input type="password" class="form-control" id="register_password_repeat" placeholder="Повторіть пароль"> </div> <button type="submit" class="btn btn-success">Зареєструватися</button>
+                    <form method="post" action="{% url 'user_register' %}">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="register_username" id="floatingInput" placeholder="name@example.com">
+                            <label for="floatingInput">Логін</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" name="register_email" id="floatingInput" placeholder="name@example.com">
+                            <label for="floatingInput">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="register_password" id="floatingPassword" placeholder="Пароль">
+                            <label for="floatingPassword">Пароль</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" name="register_password_repeat" id="floatingPassword" placeholder="Пароль">
+                            <label for="floatingPassword">Повторіть пароль</label>
+                        </div>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Зареєструватися</button>
+                        <hr class="my-4">
+                        <small class="text-body-secondary">Натискаючи «Зареєструватися», ви погоджуєтеся з умовами використання.</small>
                     </form>
                 </div>
             </div>
