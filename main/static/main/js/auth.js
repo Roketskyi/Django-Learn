@@ -2,13 +2,10 @@ function togglePanel(panelIdToShow, panelIdToHide) {
     var panelToShow = document.getElementById(panelIdToShow);
     var panelToHide = document.getElementById(panelIdToHide);
     
-    // Перевірка, чи панель, яку ви хочете показати, вже видима
     if (panelToShow.style.opacity === "1") {
-        // Якщо вже видима, то змінюємо тільки панель, яку хочемо приховати
         panelToShow.style.opacity = "0";
         panelToShow.style.pointerEvents = "none";
     } else {
-        // Якщо не видима, то змінюємо видимість обох панелей
         panelToShow.style.opacity = "1";
         panelToShow.style.pointerEvents = "auto";
         panelToHide.style.opacity = "0";
@@ -17,22 +14,39 @@ function togglePanel(panelIdToShow, panelIdToHide) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.close').forEach(function(closeButton) {
-        closeButton.addEventListener('click', function() {
-            var panel = this.parentElement;
-            panel.style.opacity = "0";
-            panel.style.pointerEvents = "none";
+    var logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            fetch(logoutButton.getAttribute('data-logout-url'), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'), // Використання CSRF токена з cookies
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({action: 'logout'})
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Logout successful");
+                    window.location.reload(true); // Перезавантаження сторінки після виходу
+                } else {
+                    console.log("Logout failed");
+                }
+            }).catch(error => console.error('Error:', error));
         });
-    });
-
-    // Додамо обробник події для закриття панелей при кліку ззовні
-    document.addEventListener('click', function(event) {
-        var openedPanels = document.querySelectorAll('.panel[style*="opacity: 1"]');
-        if (openedPanels.length > 0 && !event.target.closest('.panel') && !event.target.closest('.text-end')) {
-            openedPanels.forEach(function(openedPanel) {
-                openedPanel.style.opacity = "0";
-                openedPanel.style.pointerEvents = "none";
-            });
-        }
-    });
+    }
 });
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

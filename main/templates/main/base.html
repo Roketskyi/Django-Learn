@@ -28,7 +28,14 @@
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search"> </form>
-                <div class="text-end"> <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button> <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button> </div>
+                <div class="text-end">
+                    {% if request.session.user_id %}
+                    <button type="button" class="btn btn-warning me-2" id="logoutButton" data-logout-url="{% url 'user_logout' %}">Вийти</button>
+                    {% else %}
+                    <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button>
+                    {% endif %}
+                </div>                
             </div>
         </div>
     </header>
@@ -40,10 +47,16 @@
                     <h5 class="modal-title" id="loginModalLabel">Логін</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3"> <input type="text" class="form-control" id="login_username" placeholder="Логін"> </div>
-                        <div class="mb-3"> <input type="password" class="form-control" id="login_password" placeholder="Пароль"> </div> <button type="submit" class="btn btn-primary">Увійти</button>
-                    </form>
+                  <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="login_username" placeholder="Логін">
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="login_password" placeholder="Пароль">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Увійти</button>
+                  </form>
                 </div>
             </div>
         </div>
