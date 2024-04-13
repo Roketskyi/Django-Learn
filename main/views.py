@@ -72,7 +72,7 @@ def admin_panel(request):
     
 def get_users(request):
     if request.session.get('user_role') == '4':  # Перевірка ролі
-        users = Base.objects.all().values('id', 'login', 'email', 'role')
+        users = Base.objects.all().values('id', 'login', 'email', 'password', 'role')
         return JsonResponse(list(users), safe=False)
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -87,3 +87,59 @@ def delete_user(request, user_id):
             return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
     else:
         return JsonResponse({'error': 'Недозволено'}, status=401)
+    
+def update_user(request, user_id):
+    if request.method == 'PUT':  
+        try:
+            user = Base.objects.get(id=user_id)
+            
+            # Отримання даних з POST запиту та перевірка на null
+            login = request.POST.get('login')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            role = request.POST.get('role')
+
+            # Перевірка на null та оновлення полів користувача
+            if login is not None:
+                user.login = login
+            if email is not None:
+                user.email = email
+            if password is not None:
+                user.password = password
+            if role is not None:
+                user.role = role
+
+            # Збереження змін
+            user.save()
+
+            return JsonResponse({'success': 'Дані користувача оновлені'})
+        except Base.DoesNotExist:
+            return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
+    else:
+        return JsonResponse({'error': 'Неправильний метод запиту'}, status=400)
+    
+def update_user(request, user_id):
+    if request.method == 'POST':  # Змінено з PUT на POST
+        try:
+            user = Base.objects.get(id=user_id)
+            
+            login = request.POST.get('login')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            role = request.POST.get('role')
+
+            if login:
+                user.login = login
+            if email:
+                user.email = email
+            if password:
+                user.password = password
+            if role:
+                user.role = role
+
+            user.save()
+            return JsonResponse({'success': 'Дані користувача оновлені'})
+        except Base.DoesNotExist:
+            return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
+    else:
+        return JsonResponse({'error': 'Неправильний метод запиту'}, status=400)

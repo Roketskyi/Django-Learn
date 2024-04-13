@@ -16,4 +16,5 @@ urlpatterns = [
     path('admin-panel/', views.admin_panel, name='admin_panel'),
     path('get-users/', views.get_users, name='get_users'),
     path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('update-user/<int:user_id>/', views.update_user, name='update_user'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
 
-<head> {% load static %}
+<head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -13,7 +14,7 @@
     <header class="p-3 bg-dark">
         <div class="container">
             <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-start">
-                <h2 class="display-5 text-light"><a href="/" class="text-white text-decoration-none">NEWS</a></h2>
+                <h2 class="display-8 text-light"><a href="/admin-panel" class="text-white text-decoration-none">Панель Адмінстратора</a></h2>
 
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
@@ -23,7 +24,7 @@
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a href="/" class="nav-link px-2 text-white">Головна сторінка</a></li>
-                    <li><a href="#" class="nav-link px-2 text-white" onclick="toggleUsersTable()">База користувачів</a></li>
+                    <li><button class="nav-link px-2 text-white">База користувачів</button></li>
                     <li><a href="/about" class="nav-link px-2 text-white">База статтей</a></li>
                 </ul>
 
@@ -35,8 +36,8 @@
                         </a>
                         <ul class="dropdown-menu text-small" style="position: absolute;">
                             {% if request.session.user_role == '4' %}
-                                <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             {% endif %}
                             <li><a class="dropdown-item" href="#">Профіль</a></li>
                             <li><a class="dropdown-item" href="#">Налаштування</a></li>
@@ -48,19 +49,20 @@
                     <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button>
                     {% endif %}
-                </div>                               
+                </div>
             </div>
         </div>
     </header>
 
     <div class="container mt-4 users-table-section" style="display: none;">
-        <button onclick="loadUsers()" class="btn btn-primary">Завантажити користувачів</button>
+        <button class="btn btn-primary">Завантажити користувачів</button>
         <table class="table mt-3">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Логін</th>
                     <th>Email</th>
+                    <th>Password</th>
                     <th>Роль</th>
                     <th>Дії</th>
                 </tr>
@@ -69,8 +71,48 @@
         </table>
     </div>
 
+    <!-- Модальне вікно для редагування користувачів -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Редагувати користувача</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label for="editUserLogin" class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="editUserLogin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserPassword" class="form-label">Password</label>
+                        <input type="text" class="form-control" id="editUserPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserRole" class="form-label">Роль</label>
+                        <select class="form-select" id="editUserRole">
+                            <option value="2">Зареєстрований користувач</option>
+                            <option value="3">Модератор</option>
+                            <option value="4">Адміністратор</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesButton">Зберегти зміни</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+
 </html>
