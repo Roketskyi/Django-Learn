@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'main/css/auth.css' %}">
     <title>Панель Адміністратора</title>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body>
@@ -54,15 +56,14 @@
         </div>
     </header>
 
-    <div class="container mt-4 users-table-section" style="display: none;">
-        <button class="btn btn-primary">Завантажити користувачів</button>
+    <div class="container mt-4 users-table-section">
+        <button class="btn btn-primary" onclick="loadUsers()">Завантажити користувачів</button>
         <table class="table mt-3">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Логін</th>
                     <th>Email</th>
-                    <th>Password</th>
                     <th>Роль</th>
                     <th>Дії</th>
                 </tr>
@@ -113,6 +114,25 @@
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
 
+    <script>
+        function testt(callback) {
+            swal({
+                title: "Are you sure?",
+                text: "Your will not be able to recover this imaginary file!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+                },
+                function(){
+                    swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                    if (callback) {
+                        callback();
+                    }
+                });
+        }
+    </script>
+</body>
 </html>

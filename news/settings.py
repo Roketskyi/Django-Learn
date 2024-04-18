@@ -39,8 +39,15 @@ SECRET_KEY = 'django-insecure-s#a6k3a4oym9n0ex#x-$s317p^@nn9((%pdj*f47c*ki8p1fj3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['2.tcp.eu.ngrok.io', '127.0.0.1']
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Зберігання сесій у базі даних
+SESSION_COOKIE_AGE = 86400  # Час життя кукі (у секундах)
+
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+]
 
 # Application definition
 

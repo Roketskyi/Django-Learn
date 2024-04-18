@@ -2,6 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import News, Base
 from django.contrib import messages
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password, check_password
 
 def index(request):
     news = News.objects.all()
@@ -22,12 +26,12 @@ def user_login(request):
     if request.method == 'POST':
         login_username = request.POST.get('login_username')
         login_password = request.POST.get('login_password')
-        user = Base.objects.filter(login=login_username, password=login_password).first()
+        user = Base.objects.filter(login=login_username).first()
         
-        if user:
-            request.session['user_id'] = user.id  # Збереження ID користувача в сесії
-            request.session['user_role'] = user.role  # Збереження ролі користувача в сесії
-            return redirect('/')  # Redirect to home page
+        if user and check_password(login_password, user.password):
+            request.session['user_id'] = user.id
+            request.session['user_role'] = user.role
+            return redirect('/')
         else:
             messages.error(request, 'Невірний логін або пароль')
 
@@ -52,94 +56,72 @@ def user_register(request):
             elif Base.objects.filter(email=email).exists():
                 messages.error(request, 'Email вже використовується.')
             else:
-                # Шифрування пароля перед збереженням
-                user = Base(login=username, email=email, password=password, role='2')  # 'role' може бути змінено відповідно до вашої логіки
+                hashed_password = make_password(password)  # Хеширование пароля
+                user = Base(login=username, email=email, password=hashed_password, role='2')
                 user.save()
                 messages.success(request, 'Реєстрація пройшла успішно!')
                 return redirect('/')
         else:
             messages.error(request, 'Паролі не співпадають.')
 
-    return render(request, 'main/index.html')  # Виправлено повернення шаблону у випадку GET-запиту
+    return render(request, 'main/index.html')
 
 def admin_panel(request):
-    # Перевіряємо, чи є у користувача ID і роль в сесії
     if request.session.get('user_id') and request.session.get('user_role') == '4':
         return render(request, 'main/admin_panel.html')
     else:
-        # Якщо у користувача немає ролі 4, перенаправляємо його на головну сторінку
         return redirect('/')
     
+@csrf_exempt
 def get_users(request):
-    if request.session.get('user_role') == '4':  # Перевірка ролі
-        users = Base.objects.all().values('id', 'login', 'email', 'password', 'role')
+    if request.method == 'GET' and request.session.get('user_role') == '4':
+        users = Base.objects.all().values('id', 'login', 'email', 'role')
         return JsonResponse(list(users), safe=False)
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+@csrf_exempt
 def delete_user(request, user_id):
-    if request.session.get('user_role') == '4':  # Перевірка ролі
+    if request.method == 'DELETE' and request.session.get('user_role') == '4':
         try:
             user = Base.objects.get(id=user_id)
             user.delete()
-            return JsonResponse({'success': 'Користувач видалений'})
+            return JsonResponse({'success': 'Користувач видалений'}, status=200)
         except Base.DoesNotExist:
             return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
     else:
         return JsonResponse({'error': 'Недозволено'}, status=401)
-    
+
+from django.core import serializers
+
+@csrf_exempt
+@require_POST
 def update_user(request, user_id):
-    if request.method == 'PUT':  
-        try:
-            user = Base.objects.get(id=user_id)
-            
-            # Отримання даних з POST запиту та перевірка на null
-            login = request.POST.get('login')
-            email = request.POST.get('email')
-            password = request.POST.get('password')
-            role = request.POST.get('role')
-
-            # Перевірка на null та оновлення полів користувача
-            if login is not None:
-                user.login = login
-            if email is not None:
-                user.email = email
-            if password is not None:
-                user.password = password
-            if role is not None:
-                user.role = role
-
-            # Збереження змін
-            user.save()
-
-            return JsonResponse({'success': 'Дані користувача оновлені'})
-        except Base.DoesNotExist:
-            return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
-    else:
-        return JsonResponse({'error': 'Неправильний метод запиту'}, status=400)
+    user = get_object_or_404(Base, id=user_id)
     
-def update_user(request, user_id):
-    if request.method == 'POST':  # Змінено з PUT на POST
-        try:
-            user = Base.objects.get(id=user_id)
-            
-            login = request.POST.get('login')
-            email = request.POST.get('email')
-            password = request.POST.get('password')
-            role = request.POST.get('role')
+    login = request.POST.get('login')
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    role = request.POST.get('role')
 
-            if login:
-                user.login = login
-            if email:
-                user.email = email
-            if password:
-                user.password = password
-            if role:
-                user.role = role
+    if login:
+        user.login = login
+    if email:
+        user.email = email
+    if password:
+        # Припускаючи, що ви хочете хешувати паролі перед збереженням
+        user.password = make_password(password)
+    if role:
+        user.role = role
 
-            user.save()
-            return JsonResponse({'success': 'Дані користувача оновлені'})
-        except Base.DoesNotExist:
-            return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
-    else:
-        return JsonResponse({'error': 'Неправильний метод запиту'}, status=400)
+    user.save()  # Збереження змін в базі даних
+
+    # Оновлення сесії користувача
+    if request.session.get('user_id') == user_id:
+        request.session['user_role'] = role
+
+    # Отримання списку користувачів після оновлення
+    users = Base.objects.all()
+    users_data = serializers.serialize('json', users)
+
+    return JsonResponse({'success': 'Дані користувача оновлені', 'users': users_data})
