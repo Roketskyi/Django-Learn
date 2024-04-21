@@ -125,3 +125,48 @@ def update_user(request, user_id):
     users_data = serializers.serialize('json', users)
 
     return JsonResponse({'success': 'Дані користувача оновлені', 'users': users_data})
+
+
+# Відновлення паролю
+
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+
+@csrf_exempt
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = Base.objects.filter(email=email).first()
+        if user:
+            # Генеруємо випадковий код для відновлення паролю
+            code = get_random_string(length=6)
+
+            # Зберігаємо код для перевірки та електронну пошту користувача
+            user.reset_password_code = code
+            user.save()
+
+            # Відправляємо код на електронну пошту користувача
+            send_mail(
+                'Код для відновлення паролю',  # Тема листа
+                f'Ваш код для відновлення паролю: {code}',  # Текст повідомлення
+                'from@example.com',  # Адреса відправника (може бути будь-яка дійсна адреса електронної пошти)
+                [email],  # Список отримувачів (у цьому випадку - один користувач)
+                fail_silently=False,  # Параметр, який вказує, чи потрібно виводити повідомлення про помилку
+            )
+
+            return JsonResponse({'success': 'Код для відновлення паролю надіслано на вашу електронну пошту.', 'email': email}, status=200)
+        else:
+            return JsonResponse({'error': 'Користувача з такою електронною поштою не знайдено.'}, status=404)
+
+@csrf_exempt
+def verify_code(request):
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        user = Base.objects.filter(reset_password_code=code).first()
+        if user:
+            # Видаляємо код після перевірки
+            user.reset_password_code = None
+            user.save()
+            return JsonResponse({'success': 'Код успішно перевірено.'}, status=200)
+        else:
+            return JsonResponse({'error': 'Неправильний код для відновлення паролю.'}, status=400)

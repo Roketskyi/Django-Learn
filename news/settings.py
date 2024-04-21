@@ -44,6 +44,17 @@ ALLOWED_HOSTS = ['2.tcp.eu.ngrok.io', '127.0.0.1']
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Зберігання сесій у базі даних
 SESSION_COOKIE_AGE = 86400  # Час життя кукі (у секундах)
 
+# Email frogo password
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Адреса SMTP сервера
+EMAIL_PORT = 587  # Порт SMTP сервера
+EMAIL_USE_TLS = True  # Використовувати TLS (Transport Layer Security) для безпечного з'єднання
+EMAIL_HOST_USER = 'news.shop.new@gmail.com'  # Ваша електронна пошта
+EMAIL_HOST_PASSWORD = '080805MLP'  # Пароль від вашої електронної пошти
+DEFAULT_FROM_EMAIL = 'news.shop.new@gmail.com'  # За замовчуванням від кого буде надсилатись лист
+
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',

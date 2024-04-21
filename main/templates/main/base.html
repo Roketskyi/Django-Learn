@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
 
-<head> {% load static %}
+<head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -49,7 +50,7 @@
                     <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Логін</button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Реєстрація</button>
                     {% endif %}
-                </div>                               
+                </div>
             </div>
         </div>
     </header>
@@ -58,7 +59,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Авторизація</h5> <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="loginModalLabel">Авторизація</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form method="post" action="{% url 'login' %}">
@@ -72,10 +74,14 @@
                             <input type="password" class="form-control" name="login_password" id="floatingPassword" placeholder="Пароль">
                             <label for="floatingPassword">Пароль</label>
                         </div>
-                        <div class="checkbox mb-3">
-                            <label>
-                                <input type="checkbox" value="remember-me"> Запам'ятати мене
-                            </label>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="remember-me" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Запам'ятати мене
+                                </label>
+                            </div>
+                            <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Забули пароль?</a>
                         </div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">Увійти</button>
                     </form>
@@ -119,14 +125,91 @@
         </div>
     </div>
 
-    <div class="container"> {% block content %}{% if messages %}
-                            {% for message in messages %}
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}{% endblock %} </div>
+    <!-- Модальне вікно для відновлення паролю -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Відновлення паролю</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgotPasswordForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Електронна пошта</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div id="codeInputContainer" style="display: none;">
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Код</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="sendCodeBtn">Надіслати код</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для введення коду та нового паролю -->
+    <div class="modal fade" id="enterCodeModal" tabindex="-1" aria-labelledby="enterCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enterCodeModalLabel">Введіть код</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="enterCodeForm">
+                        <div class="mb-3">
+                            <label for="code" class="form-label">Код</label>
+                            <input type="text" class="form-control" id="code" name="code" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="verifyCodeBtn">Підтвердити</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для зміни паролю -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">Змініть пароль</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm">
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Новий пароль</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Підтвердіть пароль</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="changePasswordBtn">Змінити пароль</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% block content %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endblock %}
+    </div>
 
     <footer class="py-3 my-4">
         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
@@ -138,6 +221,8 @@
     </footer>
 
     <!-- включіть Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+
 </html>
