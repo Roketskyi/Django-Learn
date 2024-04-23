@@ -13,8 +13,8 @@ function loadUsers() {
             <td>${user.email}</td>
             <td>${user.role}</td>
             <td>
-                <button onclick="editUser(${user.id})">Редагувати</button>
-                <button onclick="testt(() => deleteUser(${user.id}))">Видалити</button>
+                <button class="btn btn-primary edit-btn" onclick="updateUser(${user.id})">Редагувати</button>
+                <button class="btn btn-danger delete-btn" onclick="testt(() => deleteUser(${user.id}))">Видалити</button>
                 </td>
             </tr>`;
             tableBody.innerHTML += row;
