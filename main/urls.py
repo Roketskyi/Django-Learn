@@ -1,23 +1,39 @@
 from django.urls import path
-from . import views
+from .views import (
+    IndexView,
+    AboutView,
+    NewsDetailView,
+    NewsListView,
+    UserLoginView,
+    UserLogoutView,
+    UserRegisterView,
+    ForgotPasswordView,
+    VerifyCodeView,
+    AdminPanelView,
+    GetUsersView,
+    GetUserView,
+    DeleteUserView,
+    UpdateUserView,
+)
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.index, name='home'),
-    path('about/', views.about, name='about'),
-    path('news/<int:pk>/', views.news_detail, name='news_detail'),
-    path('news/', views.news_list, name='news_list'),
-    path('login/', views.user_login, name='login'),
-    path('logout/', views.user_logout, name='user_logout'),
-    path('register/', views.user_register, name='user_register'),
+    path('', IndexView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
+    path('news/<int:pk>/', NewsDetailView.as_view(), name='news_detail'),
+    path('news/', NewsListView.as_view(), name='news_list'),
+    path('login/', UserLoginView.as_view(), name='login'),
+    path('logout/', UserLogoutView.as_view(), name='user_logout'),
+    path('register/', UserRegisterView.as_view(), name='user_register'),
 
-    path('forgot-password/', views.forgot_password, name='forgot_password'),
-    path('verify-code/', views.verify_code, name='verify_code'),
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
+    path('verify-code/', VerifyCodeView.as_view(), name='verify_code'),
 
-    path('admin-panel/', views.admin_panel, name='admin_panel'),
-    path('get-users/', views.get_users, name='get_users'),
-    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
-    path('update-user/<int:user_id>/', views.update_user, name='update_user'),
+    path('admin-panel/', AdminPanelView.as_view(), name='admin_panel'),
+    path('get-users/', GetUsersView.as_view(), name='get_users'),
+    path('get-user/<int:user_id>/', GetUserView.as_view(), name='get_user'),
+    path('delete-user/<int:user_id>/', DeleteUserView.as_view(), name='delete_user'),
+    path('update-user/<int:user_id>/', UpdateUserView.as_view(), name='update_user'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

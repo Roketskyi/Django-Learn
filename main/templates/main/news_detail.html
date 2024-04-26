@@ -1,3 +1,4 @@
+<!-- news_detail.html -->
 {% extends 'main/base.html' %}
 {% load static %}
 
@@ -10,7 +11,8 @@
     <div class="card">
       <div class="card-body">
         <h2 class="card-title">{{ news_item.title }}</h2>
-        <p class="card-text">{{ news_item.content }}</p>
+        <!-- Використовуємо безпечний фільтр safe, щоб Django не ескейпив HTML -->
+        <p class="card-text">{{ news_item.html_content | safe }}</p>
         <p class="card-text"><strong>Автор:</strong> {{ news_item.author }}</p>
         <p class="card-text"><strong>Дата публікації:</strong> {{ news_item.created_at }}</p>
       </div>

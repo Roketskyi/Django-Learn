@@ -1,3 +1,4 @@
+<!-- index.html -->
 {% extends 'main/base.html' %}
 {% load static %}
 
@@ -18,7 +19,8 @@
             <a href="{% url 'news_detail' pk=el.pk %}" class="card-title">
               <h5>{{ el.title }}</h5>
             </a>
-            <p class="card-text">{{ el.byte_content | truncatechars:100 }}</p>
+            <!-- Використовуємо safe фільтр, щоб Django не ескейпив HTML -->
+            <p class="card-text">{{ el.byte_content | safe }}</p>
             <div class="mt-auto">
               <p class="card-text text-muted">Автор: {{ el.author }}</p>
               <div class="d-flex justify-content-between align-items-center">

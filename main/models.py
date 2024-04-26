@@ -16,8 +16,8 @@ class User(models.Model):
 
 class News(models.Model):
     title = models.CharField(max_length=255)
-    content = models.TextField()
-    byte_content = models.TextField(null=False)
+    byte_content = models.TextField()  # Текст без форматування
+    html_content = models.TextField()  # HTML-форматований текст новини
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='news_images/')
@@ -28,6 +28,7 @@ class News(models.Model):
     class Meta:
         verbose_name = 'Новину'
         verbose_name_plural = 'Новини'
+
 
 class Base(models.Model):
     id = models.AutoField(primary_key=True)

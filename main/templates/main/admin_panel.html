@@ -57,8 +57,8 @@
     </header>
 
     <div class="container mt-4 users-table-section">
-        <button class="btn btn-primary" onclick="loadUsers()">Завантажити користувачів</button>
-        <table class="table mt-3">
+        <button class="btn btn-primary" onclick="loadUsers(); document.getElementById('usersTableContainer').removeAttribute('style');">Завантажити користувачів</button>
+        <table class="table mt-3" id="usersTableContainer" style="display: none;">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                    <button type="button" class="btn btn-primary" id="saveChangesButton">Зберегти зміни</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesButton" onclick="saveChanges()">Зберегти зміни</button>
                 </div>
             </div>
         </div>
