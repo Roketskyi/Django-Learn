@@ -55,7 +55,12 @@
     </header>
 
     <div class="container mt-4 users-table-section">
-        <button class="btn btn-primary" onclick="loadUsers(); document.getElementById('usersTableContainer').removeAttribute('style');">Завантажити користувачів</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-primary" onclick="loadUsers(); document.getElementById('usersTableContainer').removeAttribute('style');">Завантажити користувачів</button>
+            <button class="btn btn-primary" onclick="loadNews(); document.getElementById('newsTableContainer').removeAttribute('style');">Завантажити статті</button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">Додати користувача</button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNewsModal">Додати статтю</button>
+        </div>
         <table class="table mt-3" id="usersTableContainer" style="display: none;">
             <thead>
                 <tr>
@@ -67,6 +72,19 @@
                 </tr>
             </thead>
             <tbody id="usersTable"></tbody>
+        </table>
+
+        <table class="table mt-3" id="newsTableContainer" style="display: none;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Заголовок</th>
+                    <th>Автор</th>
+                    <th>Дата створення</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody id="newsTable"></tbody>
         </table>
     </div>
 
@@ -109,6 +127,88 @@
         </div>
     </div>
 
+    <!-- Модальне вікно для додавання користувача -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Додати користувача</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userLogin" class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="userLogin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Пароль</label>
+                        <input type="text" class="form-control" id="userPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="userEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Роль</label>
+                        <select class="form-select" id="userRole">
+                            <option value="2">Зареєстрований користувач</option>
+                            <option value="3">Модератор</option>
+                            <option value="4">Адміністратор</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">Додати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для додавання новин -->
+    <div class="modal fade" id="addNewsModal" tabindex="-1" aria-labelledby="addNewsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewsModalLabel">Додати новину</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newsTitle" class="form-label">Заголовок</label>
+                        <input type="text" class="form-control" id="newsTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsByteContent" class="form-label">Байтовий контент</label>
+                        <input type="text" class="form-control" id="newsByteContent">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsImage" class="form-label">Зображення</label>
+                        <input type="file" class="form-control" id="newsImage">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsAuthor" class="form-label">Автор</label>
+                        <select class="form-select" id="newsAuthor">
+                            <!-- Опції для вибору автора -->
+                            {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.login }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsHtmlContent" class="form-label">HTML-контент</label>
+                        <textarea class="form-control" id="newsHtmlContent" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" onclick="addNews()">Додати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -117,20 +217,18 @@
     <script>
         function testt(callback) {
             swal({
-                title: "Are you sure?",
-                text: "Your will not be able to recover this imaginary file!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-                },
-                function(){
-                    swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                title: "Ви впевнені?",
+                text: "Ви не зможете відновити цей об'єкт!",
+                icon: "warning",
+                buttons: ["Скасувати", "Так, видалити!"],
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
                     if (callback) {
                         callback();
                     }
-                });
+                }
+            });
         }
     </script>
 </body>

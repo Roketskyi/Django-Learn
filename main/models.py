@@ -29,7 +29,6 @@ class News(models.Model):
         verbose_name = 'Новину'
         verbose_name_plural = 'Новини'
 
-
 class Base(models.Model):
     id = models.AutoField(primary_key=True)
     login = models.CharField(max_length=100)

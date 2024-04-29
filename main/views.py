@@ -5,7 +5,6 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
 from django.core import serializers
-from django.views.decorators.http import require_POST
 from .models import News, Base
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
@@ -177,3 +176,44 @@ class VerifyCodeView(View):
             return JsonResponse({'success': 'Код успішно перевірено.'}, status=200)
         else:
             return JsonResponse({'error': 'Неправильний код для відновлення паролю.'}, status=400)
+        
+class AddUserView(View):
+    def post(self, request):
+        username = request.POST.get('add_username')
+        password = request.POST.get('add_password')
+        email = request.POST.get('add_email')
+        role = request.POST.get('add_role')
+
+        if Base.objects.filter(login=username).exists():
+            messages.error(request, 'Користувач з таким логіном вже існує.')
+        elif Base.objects.filter(email=email).exists():
+            messages.error(request, 'Email вже використовується.')
+        else:
+            hashed_password = make_password(password)
+            user = Base(login=username, email=email, password=hashed_password, role=role)
+            user.save()
+            messages.success(request, 'Реєстрація пройшла успішно!')
+
+        return JsonResponse({'success': 'Новий користувач доданий в базу', 'error': 'Помилка'})
+    
+class GetNewsView(View):
+    def get(self, request):
+        news_items = News.objects.all()
+        data = list(news_items.values())
+        return JsonResponse(data, safe=False)
+
+class AddNewsView(View):
+    def post(self, request):
+        if request.method == 'POST':
+            title = request.POST.get('title')
+            content = request.POST.get('content')
+            # Перевірка, чи всі необхідні дані були надані
+            if title and content:
+                # Створення нового об'єкту новини і збереження його в базі даних
+                news = News(title=title, content=content)
+                news.save()
+                # Повернення успішної відповіді
+                return JsonResponse({'success': 'Новину успішно додано.'})
+            else:
+                # Повернення помилки, якщо дані були неповними
+                return JsonResponse({'error': 'Будь ласка, надайте назву та вміст новини.'}, status=400)
