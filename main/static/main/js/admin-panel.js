@@ -39,6 +39,31 @@ function updateUser(userId) {
     .catch(error => console.error('Помилка:', error));
 }
 
+function deleteUser(userId) {
+    fetch(`/delete-user/${userId}/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Виникла помилка при видаленні користувача.');
+        }
+    })
+    .then(data => {
+        swal("Успіх!", data.success, "success");
+        // Оновлення списку користувачів
+        loadUsers();
+    })
+    .catch(error => {
+        console.error('Помилка:', error);
+        swal("Помилка!", error.message, "error");
+    });
+}
+
 function saveChanges() {
     const userId = document.getElementById('editUserId').value;
     const login = document.getElementById('editUserLogin').value;
