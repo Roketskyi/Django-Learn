@@ -177,3 +177,22 @@ class VerifyCodeView(View):
             return JsonResponse({'success': 'Код успішно перевірено.'}, status=200)
         else:
             return JsonResponse({'error': 'Неправильний код для відновлення паролю.'}, status=400)
+        
+class AddUserView(View):
+    def post(self, request):
+        username = request.POST.get('add_username')
+        password = request.POST.get('add_password')
+        email = request.POST.get('add_email')
+        role = request.POST.get('add_role')
+
+        if Base.objects.filter(login=username).exists():
+            messages.error(request, 'Користувач з таким логіном вже існує.')
+        elif Base.objects.filter(email=email).exists():
+            messages.error(request, 'Email вже використовується.')
+        else:
+            hashed_password = make_password(password)
+            user = Base(login=username, email=email, password=hashed_password, role=role)
+            user.save()
+            messages.success(request, 'Реєстрація пройшла успішно!')
+
+        return JsonResponse({'success': 'Новий користувач доданий в базу', 'error': 'Помилка'})

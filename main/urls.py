@@ -14,6 +14,7 @@ from .views import (
     GetUserView,
     DeleteUserView,
     UpdateUserView,
+    AddUserView,
 )
 
 from django.conf import settings
@@ -36,4 +37,5 @@ urlpatterns = [
     path('get-user/<int:user_id>/', GetUserView.as_view(), name='get_user'),
     path('delete-user/<int:user_id>/', DeleteUserView.as_view(), name='delete_user'),
     path('update-user/<int:user_id>/', UpdateUserView.as_view(), name='update_user'),
+    path('add-user/', AddUserView.as_view(), name='add_user'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

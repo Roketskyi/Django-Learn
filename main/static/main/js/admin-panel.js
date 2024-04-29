@@ -24,6 +24,39 @@ function loadUsers() {
     .catch(error => console.error('Помилка:', error));
 }
 
+function addUser() {
+    console.log(addUser);
+    const login = document.getElementById('userLogin').value; // Отримання значення поля Логін
+    const password = document.getElementById('userPassword').value; // Отримання значення поля Пароль
+    const email = document.getElementById('userEmail').value; // Отримання значення поля Email
+    const role = document.getElementById('userRole').value; // Отримання значення поля Роль
+
+    // Відправка запиту на сервер для створення нового користувача
+    fetch('/add-user/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: `add_username=${login}&add_password=${password}&add_email=${email}&add_role=${role}`,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            swal("Успіх!", data.success, "success");
+            // Оновлення списку користувачів після додавання нового користувача
+            loadUsers();
+            // Закриття модального вікна
+            const addUserModal = document.getElementById('addUserModal');
+            const modalInstance = bootstrap.Modal.getInstance(addUserModal);
+            modalInstance.hide();
+        } else if (data.error) {
+            swal("Помилка!", data.error, "error");
+        }
+    })
+    .catch(error => console.error('Помилка:', error));
+}
+
 function updateUser(userId) {
     fetch(`/get-user/${userId}/`, { method: 'GET' })
     .then(response => response.json())
@@ -94,7 +127,6 @@ function saveChanges() {
     .catch(error => console.error('Помилка:', error));
 }
 
-// Функція для отримання значення cookie
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {

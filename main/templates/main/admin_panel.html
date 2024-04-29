@@ -55,7 +55,10 @@
     </header>
 
     <div class="container mt-4 users-table-section">
-        <button class="btn btn-primary" onclick="loadUsers(); document.getElementById('usersTableContainer').removeAttribute('style');">Завантажити користувачів</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-primary" onclick="loadUsers(); document.getElementById('usersTableContainer').removeAttribute('style');">Завантажити користувачів</button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">Додати користувача</button>
+        </div>
         <table class="table mt-3" id="usersTableContainer" style="display: none;">
             <thead>
                 <tr>
@@ -104,6 +107,44 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
                     <button type="button" class="btn btn-primary" id="saveChangesButton" onclick="saveChanges()">Зберегти зміни</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для додавання користувача -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Додати користувача</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userLogin" class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="userLogin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Пароль</label>
+                        <input type="text" class="form-control" id="userPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="userEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Роль</label>
+                        <select class="form-select" id="userRole">
+                            <option value="2">Зареєстрований користувач</option>
+                            <option value="3">Модератор</option>
+                            <option value="4">Адміністратор</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">Додати</button>
                 </div>
             </div>
         </div>
