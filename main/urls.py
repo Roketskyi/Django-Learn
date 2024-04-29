@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+<<<<<<< HEAD
     path('', IndexView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('news/<int:pk>/', NewsDetailView.as_view(), name='news_detail'),
@@ -36,4 +37,12 @@ urlpatterns = [
     path('get-user/<int:user_id>/', GetUserView.as_view(), name='get_user'),
     path('delete-user/<int:user_id>/', DeleteUserView.as_view(), name='delete_user'),
     path('update-user/<int:user_id>/', UpdateUserView.as_view(), name='update_user'),
+=======
+    path('', views.index, name='home'),
+    path('about/', views.about, name='about'),
+    path('news/<int:pk>/', views.news_detail, name='news_detail'),
+    path('news/', views.news_list, name='news_list'),
+    path('register_user/', views.register_user, name='register_user'),  # Доданий URL-шлях для реєстрації
+    path('login_user/', views.login_user, name='login_user'),  # Доданий URL-шлях для входу
+>>>>>>> 626a9bbd3da842292e64084b620f2df2e8d3aa0e
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse
@@ -9,6 +10,13 @@ from django.views.decorators.http import require_POST
 from .models import News, Base
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
+=======
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import News, Base
+from django.contrib.auth import authenticate, login
+from rest_framework_simplejwt.tokens import RefreshToken
+>>>>>>> 626a9bbd3da842292e64084b620f2df2e8d3aa0e
 
 class IndexView(View):
     def get(self, request):
@@ -24,6 +32,7 @@ class NewsDetailView(View):
         news_item = get_object_or_404(News, pk=pk)
         return render(request, 'main/news_detail.html', {'news_item': news_item})
 
+<<<<<<< HEAD
 class NewsListView(View):
     def get(self, request):
         news_items = News.objects.all()
@@ -118,10 +127,19 @@ class UpdateUserView(View):
         user = get_object_or_404(Base, id=user_id)
 
         login = request.POST.get('login')
+=======
+def news_list(request):
+    news_items = News.objects.all()
+    return render(request, 'main/news_list.html', {'news_items': news_items})
+
+def register_user(request):
+    if request.method == 'POST':
+>>>>>>> 626a9bbd3da842292e64084b620f2df2e8d3aa0e
         email = request.POST.get('email')
         password = request.POST.get('password')
         role = request.POST.get('role')
 
+<<<<<<< HEAD
         if login:
             user.login = login
         if email:
@@ -177,3 +195,28 @@ class VerifyCodeView(View):
             return JsonResponse({'success': 'Код успішно перевірено.'}, status=200)
         else:
             return JsonResponse({'error': 'Неправильний код для відновлення паролю.'}, status=400)
+=======
+        user = Base.objects.create_user(email=email, password=password, role=role)
+        
+        if user:
+            return JsonResponse({'message': 'Registration successful'})
+        else:
+            return JsonResponse({'error': 'Registration failed'}, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'message': 'Login successful'})
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+>>>>>>> 626a9bbd3da842292e64084b620f2df2e8d3aa0e
