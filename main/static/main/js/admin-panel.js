@@ -6,7 +6,7 @@ function loadUsers() {
     .then(data => {
         const sortedData = data.sort((a, b) => a.id - b.id); // Сортування за id
         const tableBody = document.getElementById('usersTable');
-        tableBody.innerHTML = ''; // Очищення таблиці перед додаванням нових даних
+        tableBody.innerHTML = ''; // Очищення таблиці перед додаванням нових данихх
         sortedData.forEach(user => {
             const row = `<tr>
             <td>${user.id}</td>
