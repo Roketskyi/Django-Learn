@@ -230,8 +230,21 @@ class UpdateUserProfileView(View):
         user = get_object_or_404(Base, id=user_id)
 
         if new_login:
-            user.login = new_login
-            user.save()
+            user.update_login(new_login)
             return JsonResponse({'success': 'Логін успішно оновлено'}, status=200)
         else:
             return JsonResponse({'error': 'Новий логін не може бути пустим'}, status=400)
+
+class UpdateUserPasswordView(View):
+    @csrf_exempt
+    def post(self, request, user_id):
+        old_password = request.POST.get('oldPassword')
+        new_password = request.POST.get('newPassword')
+        user = get_object_or_404(Base, id=user_id)
+
+        if user.check_password(old_password):  # Перевірка старого паролю
+            user.set_password(new_password)  # Встановлення нового паролю
+            user.save()
+            return JsonResponse({'success': 'Пароль успішно оновлено'}, status=200)
+        else:
+            return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)

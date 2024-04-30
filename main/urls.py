@@ -19,6 +19,7 @@ from .views import (
     AddNewsView,
     SettingsProfileView,
     UpdateUserProfileView,
+    UpdateUserPasswordView,
 )
 
 from django.conf import settings
@@ -48,6 +49,7 @@ urlpatterns = [
     path('add-news/', AddNewsView.as_view(), name='add_news'),
 
     path('settings-profile/', SettingsProfileView.as_view(), name='settings_profile'),  # Доданий URL-шлях для налаштувань профілю
-    path('update-login/', UpdateUserProfileView.as_view(), name='update_login'),
     path('update-login/<int:user_id>/', UpdateUserProfileView.as_view(), name='update_login'),
+    path('update-password/<int:user_id>/', UpdateUserPasswordView.as_view(), name='update_password'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

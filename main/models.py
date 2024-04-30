@@ -7,6 +7,10 @@ class Base(models.Model):
     email = models.EmailField()
     role = models.CharField(max_length=50)
 
+    def update_login(self, new_login):
+        self.login = new_login
+        self.save()
+
     def __str__(self):
         return self.login
 

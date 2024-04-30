@@ -1,5 +1,5 @@
-// settings_profile.js
-document.getElementById("changeLoginForm").addEventListener("submit", function(event) {
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("changeLoginForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Зупиняємо стандартну подію подачі форми
 
     var userId = this.getAttribute("data-user-id");
@@ -8,10 +8,10 @@ document.getElementById("changeLoginForm").addEventListener("submit", function(e
     fetch('/update-login/' + userId + '/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded', // Змінено Content-Type
             'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify({ login: newLogin })
+        body: 'login=' + encodeURIComponent(newLogin) // Дані у форматі 'key=value'
     })
     .then(response => {
         if (response.ok) {
@@ -26,3 +26,19 @@ document.getElementById("changeLoginForm").addEventListener("submit", function(e
         console.error('Помилка під час відправлення запиту:', error);
     });
 });
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+})
