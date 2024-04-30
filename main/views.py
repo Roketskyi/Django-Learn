@@ -217,3 +217,21 @@ class AddNewsView(View):
             else:
                 # Повернення помилки, якщо дані були неповними
                 return JsonResponse({'error': 'Будь ласка, надайте назву та вміст новини.'}, status=400)
+
+class SettingsProfileView(View):
+    def get(self, request):
+        # Логіка для отримання сторінки налаштувань профілю
+        return render(request, 'main/settings_profile.html')
+    
+class UpdateUserProfileView(View):
+    @csrf_exempt
+    def post(self, request, user_id):
+        new_login = request.POST.get('login')
+        user = get_object_or_404(Base, id=user_id)
+
+        if new_login:
+            user.login = new_login
+            user.save()
+            return JsonResponse({'success': 'Логін успішно оновлено'}, status=200)
+        else:
+            return JsonResponse({'error': 'Новий логін не може бути пустим'}, status=400)

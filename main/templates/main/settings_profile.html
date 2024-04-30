@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+Налаштування профілю
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="mb-4">Налаштування профілю</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeLoginModal">Змінити логін</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Змінити пароль</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Змінити Email</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно для зміни логіну -->
+<div class="modal fade" id="changeLoginModal" tabindex="-1" aria-labelledby="changeLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeLoginModalLabel">Зміна логіну</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changeLoginForm" data-user-id="1" data-new-login="новий_логін">
+                    <div class="mb-3">
+                        <label for="newLogin" class="form-label">Новий логін</label>
+                        <input type="text" class="form-control" id="newLogin" name="newLogin" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </form>
+            </div>
+        </div>
+
+<!-- Модальне вікно для зміни паролю -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Зміна паролю</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label for="oldPassword" class="form-label">Старий пароль</label>
+                        <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Новий пароль</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно для зміни Email -->
+<div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeEmailModalLabel">Зміна Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changeEmailForm">
+                    <div class="mb-3">
+                        <label for="newEmail" class="form-label">Новий Email</label>
+                        <input type="email" class="form-control" id="newEmail" name="newEmail" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="sendCodeBtn">Відправити код</button>
+                    <div id="codeInputContainer" style="display: none;">
+                        <div class="mb-3">
+                            <label for="code" class="form-label">Код</label>
+                            <input type="text" class="form-control" id="code" name="code" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="verifyCodeBtn" style="display: none;">Зберегти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'main/js/settings_profile.js' %}"></script>
+
+{% endblock %}
