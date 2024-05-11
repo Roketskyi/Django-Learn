@@ -167,7 +167,7 @@ function addPhoto() {
     var photoDiv = document.createElement('div');
     photoDiv.classList.add('mb-3', 'position-relative'); // Додано position-relative для позиціонування хрестика
     photoDiv.innerHTML = '<label for="newsPhoto" class="form-label">Фотографія</label>' +
-        '<input type="file" class="form-control" id="newsPhoto">' +
+        '<input type="file" class="form-control" id="newsPhotoInArticle">' +
         '<span class="delete-field" onclick="deleteField(this)">❌</span>'; // Видалив id хрестика і змінив обробник
 
     photoDiv.addEventListener('mouseenter', function() {
@@ -200,29 +200,39 @@ function addNews() {
     const byteContent = document.getElementById('newsByteContent').value;
     const author = document.getElementById('newsAuthor').value;
 
-    // Отримання HTML-контенту з textarea
-    const paragraphs = document.querySelectorAll('#newsForm textarea');
-    let htmlContent = '';
-    paragraphs.forEach((paragraph, index) => {
-        // Додавання <p> до HTML-контенту з правильним класом
-        htmlContent += `<p class="card-text">${paragraph.value}</p>`;
-    });
-
+    // Створення FormData
     const formData = new FormData();
     formData.append('title', title);
     formData.append('byte_content', byteContent);
     formData.append('author', author);
-    formData.append('html_content', htmlContent);
 
-    // Отримання вибраного зображення
-    const imageFileInput = document.getElementById('newsPhoto');
-    if (imageFileInput.files.length > 0) {
-        const imageFile = imageFileInput.files[0];
-        formData.append('image', imageFile); // Додати зображення до FormData, якщо воно вибране
-    } else {
-        formData.append('image', ''); // Передати пустий рядок, якщо зображення не вибране
+    // Отримання HTML-контенту з textarea та фотографії
+    const textarea = document.querySelector('#newsForm textarea');
+    const fileInput = document.querySelector('#newsPhoto');
+    const fileInputInArticle = document.querySelector('#newsPhotoInArticle');
+    let htmlContent = '';
+
+    // Додавання тексту з textarea до HTML-контенту
+    htmlContent += `<p class="card-text">${textarea.value}</p>`;
+
+    // Додавання фотографії з поля "Фотографія" до FormData, але не до HTML-контенту
+    const file = fileInput.files[0];
+    if (file) {
+        formData.append('image', file);
     }
 
+    // Додавання фотографії з поля "Фотографія поста" до FormData та HTML-контенту
+    const fileInArticle = fileInputInArticle.files[0];
+    if (fileInArticle) {
+        formData.append('image_in_article', fileInArticle);
+        // Якщо це фотографія, обгорнути тегом <img> з id "newsPhotoInArticle"
+        htmlContent += `<img src="${URL.createObjectURL(fileInArticle)}" class="img-fluid mb-3" id="newsPhotoInArticle" alt="Uploaded Image">`;
+    }
+
+    // Додавання HTML-контенту до FormData
+    formData.append('html_content', htmlContent);
+
+    // Відправка даних на сервер
     fetch('/add-news/', {
         method: 'POST',
         headers: {

@@ -24,8 +24,10 @@
               <p class="card-text text-muted">Автор: {{ el.author }}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <a href="{% url 'news_detail' pk=el.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                  <a href="{% url 'news_detail' pk=el.pk %}" class="btn btn-sm btn-outline-secondary">Читати</a>
+                  {% if request.session.user_role == '4' %}
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                  {% endif %}
                 </div>
                 <small class="text-muted">{{ el.created_at }}</small>
               </div>

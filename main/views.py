@@ -235,8 +235,6 @@ class DeleteNewsView(View):
         except News.DoesNotExist:
             return JsonResponse({'error': 'Новину не знайдено.'}, status=404)
 
-
-
 class SettingsProfileView(View):
     def get(self, request):
         # Логіка для отримання сторінки налаштувань профілю

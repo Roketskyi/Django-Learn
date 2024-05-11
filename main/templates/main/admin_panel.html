@@ -30,13 +30,13 @@
                     <li><a href="/" class="nav-link px-2 text-white">Головна сторінка</a></li>
                 </ul>
 
-                <div class="text-end">
+                <div class="text-end" data-bs-theme="dark">
                     {% if request.session.user_id %}
                     <div class="dropdown text-end">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZJg6b3NaaTsZ7yztN39I8jq53nuPbs2TJPwG6vmKf5wrseAIQX8JaLQLp_drxpCBQRMM&usqp=CAU" alt="mdo" width="32" height="32" class="rounded-circle">
                         </a>
-                        <ul class="dropdown-menu text-small" style="position: absolute;">
+                        <ul class="dropdown-menu text-small" style="position: absolute;" data-bs-theme="light">
                             {% if request.session.user_role == '4' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -186,12 +186,12 @@
                             <input type="text" class="form-control" id="newsByteContent" name="byte_content">
                         </div>
                         <div class="mb-3">
-                            <label for="newsAuthor" class="form-label">Автор</label>
-                            <input type="text" class="form-control" id="newsAuthor" name="author">
+                            <label for="newsPhoto" class="form-label">Фотографія поста</label>
+                            <input type="file" class="form-control" id="newsPhoto" name="image">
                         </div>
                         <div class="mb-3">
-                            <label for="newsPhoto" class="form-label">Фотографія</label>
-                            <input type="file" class="form-control" id="newsPhoto">
+                            <label for="newsAuthor" class="form-label">Автор</label>
+                            <input type="text" class="form-control" id="newsAuthor" name="author">
                         </div>
                         <div class="mb-3" id="newsHtmlContent">
                             <!-- Тут будуть додані параграфи -->
@@ -216,8 +216,7 @@
                 </form>
             </div>
         </div>
-    </div>
-    
+    </div>  
 
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
