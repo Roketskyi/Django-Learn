@@ -100,14 +100,14 @@ class GetUserView(View):
 
 class DeleteUserView(View):
     @csrf_exempt
-    def delete(self, request, user_id):
-        if request.session.get('user_role') == '4':
+    def delete(self, request, news_id):
+        if request.session.get('user_role') == '4':  # Перевірка чи є користувач адміністратором
             try:
-                user = Base.objects.get(id=user_id)
-                user.delete()
-                return JsonResponse({'success': 'Користувач видалений'}, status=200)
-            except Base.DoesNotExist:
-                return JsonResponse({'error': 'Користувач не знайдений'}, status=404)
+                news = News.objects.get(id=news_id)
+                news.delete()
+                return JsonResponse({'success': 'Новину видалено'}, status=200)
+            except News.DoesNotExist:
+                return JsonResponse({'error': 'Новину не знайдено'}, status=404)
         else:
             return JsonResponse({'error': 'Недозволено'}, status=401)
 
@@ -203,20 +203,39 @@ class GetNewsView(View):
         return JsonResponse(data, safe=False)
 
 class AddNewsView(View):
+    @csrf_exempt
     def post(self, request):
         if request.method == 'POST':
             title = request.POST.get('title')
-            content = request.POST.get('content')
-            # Перевірка, чи всі необхідні дані були надані
-            if title and content:
-                # Створення нового об'єкту новини і збереження його в базі даних
-                news = News(title=title, content=content)
+            byte_content = request.POST.get('byte_content')
+            author_id = request.POST.get('author')
+            html_content = request.POST.get('html_content')
+            image = request.FILES.get('image')
+
+            if title and byte_content and author_id and html_content:
+                try:
+                    author = Base.objects.get(pk=int(author_id))
+                except (ValueError, Base.DoesNotExist):
+                    return JsonResponse({'error': 'Недійсний ідентифікатор автора'}, status=400)
+
+                news = News(title=title, byte_content=byte_content, author=author, html_content=html_content)
+                if image:
+                    news.image = image
                 news.save()
-                # Повернення успішної відповіді
                 return JsonResponse({'success': 'Новину успішно додано.'})
             else:
-                # Повернення помилки, якщо дані були неповними
-                return JsonResponse({'error': 'Будь ласка, надайте назву та вміст новини.'}, status=400)
+                return JsonResponse({'error': 'Будь ласка, надайте всі необхідні дані для новини.'}, status=400)
+
+class DeleteNewsView(View):
+    def delete(self, request, news_id):
+        try:
+            news = News.objects.get(id=news_id)
+            news.delete()
+            return JsonResponse({'success': 'Новину успішно видалено.'}, status=200)
+        except News.DoesNotExist:
+            return JsonResponse({'error': 'Новину не знайдено.'}, status=404)
+
+
 
 class SettingsProfileView(View):
     def get(self, request):

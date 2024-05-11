@@ -18,7 +18,7 @@ class News(models.Model):
     title = models.CharField(max_length=255)
     byte_content = models.TextField()  # Текст без форматування
     html_content = models.TextField()  # HTML-форматований текст новини
-    author = models.ForeignKey(Base, on_delete=models.CASCADE)
+    author = models.ForeignKey('Base', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='news_images/')
 

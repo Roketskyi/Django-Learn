@@ -1,0 +1,13 @@
+.delete-field {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    color: red;
+    cursor: pointer;
+    opacity: 0; /* Спочатку не відображати */
+    transition: opacity 0.3s ease-in-out; /* Плавне зникання/появлення */
+}
+
+.delete-field:hover {
+    opacity: 1; /* Показувати хрестик при наведенні мишкою */
+}
