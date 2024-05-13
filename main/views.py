@@ -201,6 +201,21 @@ class GetNewsView(View):
         news_items = News.objects.all()
         data = list(news_items.values())
         return JsonResponse(data, safe=False)
+    
+class GetNewsDetailView(View):
+    def get(self, request, news_id):
+        try:
+            news_item = News.objects.get(id=news_id)
+            data = {
+                'id': news_item.id,
+                'title': news_item.title,
+                'author_id': news_item.author_id,
+                'created_at': news_item.created_at,
+                # Додайте інші поля новини, які вам потрібні
+            }
+            return JsonResponse(data)
+        except News.DoesNotExist:
+            return JsonResponse({'error': 'Новину не знайдено.'}, status=404)
 
 class AddNewsView(View):
     @csrf_exempt

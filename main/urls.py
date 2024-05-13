@@ -20,6 +20,7 @@ from .views import (
     SettingsProfileView,
     UpdateUserProfileView,
     UpdateUserPasswordView,
+    GetNewsDetailView,
     DeleteNewsView,
 )
 
@@ -48,6 +49,7 @@ urlpatterns = [
     # Додані шляхи для новин
     path('get-news/', GetNewsView.as_view(), name='get_news'),
     path('add-news/', AddNewsView.as_view(), name='add_news'),
+    path('get-news/<int:news_id>/', GetNewsDetailView.as_view(), name='get_news_detail'),
     path('delete-news/<int:news_id>/', DeleteNewsView.as_view(), name='delete_news'),
 
     path('settings-profile/', SettingsProfileView.as_view(), name='settings_profile'),  # Доданий URL-шлях для налаштувань профілю

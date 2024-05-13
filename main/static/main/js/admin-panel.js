@@ -1,3 +1,5 @@
+var addedElements = [];
+
 function loadUsers() {
     fetch('/get-users/', {
         method: 'GET'
@@ -140,10 +142,11 @@ function loadNews() {
 
 function addTextarea() {
     var textareaDiv = document.createElement('div');
-    textareaDiv.classList.add('mb-3', 'position-relative'); // Додано position-relative для позиціонування хрестика
-    textareaDiv.innerHTML = '<label for="newsParagraph" class="form-label">Параграф</label>' +
-        '<textarea class="form-control newsParagraph" rows="3"></textarea>' +
-        '<span class="delete-field" onclick="deleteField(this)">❌</span>'; // Видалив id хрестика і змінив обробник
+    textareaDiv.classList.add('mb-3', 'position-relative');
+    var index = document.querySelectorAll('.newsParagraph').length + 1;
+    textareaDiv.innerHTML = '<label for="newsParagraph' + index + '" class="form-label">Параграф</label>' +
+        '<textarea id="newsParagraph' + index + '" class="form-control newsParagraph" rows="3"></textarea>' +
+        '<span class="delete-field" onclick="deleteField(this)">❌</span>';
 
     textareaDiv.addEventListener('mouseenter', function() {
         var deleteBtn = this.querySelector('.delete-field');
@@ -161,13 +164,16 @@ function addTextarea() {
     var dropdownElement = document.querySelector('.dropdown-add-news');
     var parentElement = dropdownElement.parentElement;
     parentElement.insertBefore(textareaDiv, dropdownElement);
+    
+    addedElements.push('textarea' + index);
 }
 
 function addPhoto() {
     var photoDiv = document.createElement('div');
-    photoDiv.classList.add('mb-3', 'position-relative'); // Додано position-relative для позиціонування хрестика
-    photoDiv.innerHTML = '<label for="newsPhoto" class="form-label">Фотографія</label>' +
-        '<input type="file" class="form-control newsPhotoInArticle" onchange="showImagePreview(this)">' + // Додано onchange для відображення попереднього перегляду
+    photoDiv.classList.add('mb-3', 'position-relative');
+    var index = document.querySelectorAll('.newsPhotoInArticle').length + 1;
+    photoDiv.innerHTML = '<label for="newsPhoto' + index + '" class="form-label">Фотографія</label>' +
+        '<input type="file" id="newsPhoto' + index + '" class="form-control newsPhotoInArticle" onchange="showImagePreview(this)">' +
         '<span class="delete-field" onclick="deleteField(this)">❌</span>';
 
     photoDiv.addEventListener('mouseenter', function() {
@@ -186,6 +192,8 @@ function addPhoto() {
     var dropdownElement = document.querySelector('.dropdown-add-news');
     var parentElement = dropdownElement.parentElement;
     parentElement.insertBefore(photoDiv, dropdownElement);
+    
+    addedElements.push('photo' + index);
 }
 
 function addNews() {
@@ -196,17 +204,16 @@ function addNews() {
 
     var htmlContent = ''; // Змінна для збереження HTML-контенту новини
 
-    // Збираємо HTML-контент параграфів
-    var paragraphs = document.querySelectorAll('.newsParagraph');
-    paragraphs.forEach(function(paragraph) {
-        htmlContent += '<p class="card-text paragraphInArticle">' + paragraph.value + '</p>';
-    });
-
-    // Збираємо HTML-контент фотографій
-    var photos = document.querySelectorAll('.newsPhotoInArticle');
-    photos.forEach(function(photo) {
-        // Додамо обгортку для фото
-        htmlContent += '<img src="' + URL.createObjectURL(photo.files[0]) + '" class="img-fluid mb-3 newsPhotoInArticle" alt="Uploaded Image">';
+    // Збираємо HTML-контент параграфів та фотографій
+    addedElements.forEach(function(element) {
+        var index = element.substring(element.length - 1);
+        if (element.startsWith('textarea')) {
+            var paragraph = document.getElementById('newsParagraph' + index);
+            htmlContent += '<p class="card-text paragraphInArticle">' + paragraph.value + '</p>';
+        } else if (element.startsWith('photo')) {
+            var photo = document.getElementById('newsPhoto' + index);
+            htmlContent += '<img src="' + URL.createObjectURL(photo.files[0]) + '" class="img-fluid mb-3 newsPhotoInArticle" alt="Uploaded Image">';
+        }
     });
 
     formData.append('html_content', htmlContent);
@@ -236,6 +243,45 @@ function addNews() {
     })
     .catch(error => console.error('Помилка:', error));
 }
+
+function updateNews(newsId) {
+    fetch(`/get-news/${newsId}/`, { method: 'GET' })
+    .then(response => response.json())
+    .then(news => {
+        document.getElementById('editNewsId').value = news.id;
+        document.getElementById('editNewsTitle').value = news.title;
+        document.getElementById('editNewsByteContent').value = news.byte_content;
+        document.getElementById('editNewsAuthor').value = news.author;
+        
+        // Очищення htmlContent від попередніх елементів, якщо вони були додані
+        document.getElementById('editNewsHtmlContent').innerHTML = '';
+
+        // Перевірка, чи html_content є масивом перед викликом forEach
+        if (Array.isArray(news.html_content)) {
+            // Додавання параграфів та фотографій з htmlContent
+            news.html_content.forEach(element => {
+                if (element.tag === 'p') {
+                    var paragraph = document.createElement('textarea');
+                    paragraph.classList.add('form-control', 'newsParagraph');
+                    paragraph.rows = '3';
+                    paragraph.value = element.content;
+                    document.getElementById('editNewsHtmlContent').appendChild(paragraph);
+                } else if (element.tag === 'img') {
+                    var photo = document.createElement('img');
+                    photo.classList.add('img-fluid', 'mb-3', 'newsPhotoInArticle');
+                    photo.src = element.src;
+                    photo.alt = 'Uploaded Image';
+                    document.getElementById('editNewsHtmlContent').appendChild(photo);
+                }
+            });
+        }
+
+        var myModal = new bootstrap.Modal(document.getElementById('editNewsModal'));
+        myModal.show();
+    })
+    .catch(error => console.error('Помилка:', error));
+}
+
 
 function deleteField(deleteBtn) {
     var element = deleteBtn.parentNode;

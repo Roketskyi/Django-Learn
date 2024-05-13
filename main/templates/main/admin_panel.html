@@ -90,6 +90,44 @@
         </table>
     </div>
 
+    <!-- Модальне вікно для додавання користувача -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Додати користувача</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userLogin" class="form-label">Логін</label>
+                        <input type="text" class="form-control" id="userLogin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Пароль</label>
+                        <input type="text" class="form-control" id="userPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="userEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Роль</label>
+                        <select class="form-select" id="userRole">
+                            <option value="2">Зареєстрований користувач</option>
+                            <option value="3">Модератор</option>
+                            <option value="4">Адміністратор</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">Додати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Модальне вікно для редагування користувачів -->
     <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -124,44 +162,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
                     <button type="button" class="btn btn-primary" id="saveChangesButton" onclick="saveChanges()">Зберегти зміни</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальне вікно для додавання користувача -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addUserModalLabel">Додати користувача</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="userLogin" class="form-label">Логін</label>
-                        <input type="text" class="form-control" id="userLogin">
-                    </div>
-                    <div class="mb-3">
-                        <label for="userPassword" class="form-label">Пароль</label>
-                        <input type="text" class="form-control" id="userPassword">
-                    </div>
-                    <div class="mb-3">
-                        <label for="userEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="userEmail">
-                    </div>
-                    <div class="mb-3">
-                        <label for="userRole" class="form-label">Роль</label>
-                        <select class="form-select" id="userRole">
-                            <option value="2">Зареєстрований користувач</option>
-                            <option value="3">Модератор</option>
-                            <option value="4">Адміністратор</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                    <button type="button" class="btn btn-primary" onclick="addUser()">Додати</button>
                 </div>
             </div>
         </div>
@@ -218,6 +218,57 @@
         </div>
     </div>
 
+    <!-- Модальне вікно для редагування новин -->
+    <div class="modal fade" id="editNewsModal" tabindex="-1" aria-labelledby="editNewsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="newsForm" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editNewsModalLabel">Редагувати новину</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editNewsId">
+                        <div class="mb-3">
+                            <label for="editNewsTitle" class="form-label">Заголовок</label>
+                            <input type="text" class="form-control" id="editNewsTitle">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNewsByteContent" class="form-label">Байтовий контент</label>
+                            <input type="text" class="form-control" id="editNewsByteContent">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNewsPhoto" class="form-label">Фотографія поста</label>
+                            <input type="file" class="form-control newsPhoto" id="editNewsPhoto">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNewsAuthor" class="form-label">Автор</label>
+                            <input type="text" class="form-control" id="editNewsAuthor">
+                        </div>
+                        <div class="mb-3" id="editNewsHtmlContent">
+                            <!-- Тут будуть додані параграфи та фотографії -->
+                        </div>
+                        <br><hr><br>
+                        <div class="mb-3 dropdown-add-news" style="text-align: center;">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Додаткові елементи
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><button class="dropdown-item" type="button" onclick="addTextarea()">Параграф</button></li>
+                                    <li><button class="dropdown-item" type="button" onclick="addPhoto()">Фотографія</button></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                        <button type="button" class="btn btn-primary" onclick="saveNewsChanges()">Зберегти зміни</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
