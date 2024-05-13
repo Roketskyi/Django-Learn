@@ -142,7 +142,7 @@ function addTextarea() {
     var textareaDiv = document.createElement('div');
     textareaDiv.classList.add('mb-3', 'position-relative'); // Додано position-relative для позиціонування хрестика
     textareaDiv.innerHTML = '<label for="newsParagraph" class="form-label">Параграф</label>' +
-        '<textarea class="form-control" id="newsParagraph" rows="3"></textarea>' +
+        '<textarea class="form-control newsParagraph" rows="3"></textarea>' +
         '<span class="delete-field" onclick="deleteField(this)">❌</span>'; // Видалив id хрестика і змінив обробник
 
     textareaDiv.addEventListener('mouseenter', function() {
@@ -167,8 +167,8 @@ function addPhoto() {
     var photoDiv = document.createElement('div');
     photoDiv.classList.add('mb-3', 'position-relative'); // Додано position-relative для позиціонування хрестика
     photoDiv.innerHTML = '<label for="newsPhoto" class="form-label">Фотографія</label>' +
-        '<input type="file" class="form-control" id="newsPhotoInArticle">' +
-        '<span class="delete-field" onclick="deleteField(this)">❌</span>'; // Видалив id хрестика і змінив обробник
+        '<input type="file" class="form-control newsPhotoInArticle" onchange="showImagePreview(this)">' + // Додано onchange для відображення попереднього перегляду
+        '<span class="delete-field" onclick="deleteField(this)">❌</span>';
 
     photoDiv.addEventListener('mouseenter', function() {
         var deleteBtn = this.querySelector('.delete-field');
@@ -188,49 +188,31 @@ function addPhoto() {
     parentElement.insertBefore(photoDiv, dropdownElement);
 }
 
-function deleteField(deleteBtn) {
-    var element = deleteBtn.parentNode;
-    if (element) {
-        element.parentNode.removeChild(element);
-    }
-}
-
 function addNews() {
-    const title = document.getElementById('newsTitle').value;
-    const byteContent = document.getElementById('newsByteContent').value;
-    const author = document.getElementById('newsAuthor').value;
+    var formData = new FormData();
+    formData.append('title', document.querySelector('.newsTitle').value);
+    formData.append('byte_content', document.querySelector('.newsByteContent').value);
+    formData.append('author', document.querySelector('.newsAuthor').value);
 
-    // Створення FormData
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('byte_content', byteContent);
-    formData.append('author', author);
+    var htmlContent = ''; // Змінна для збереження HTML-контенту новини
 
-    // Отримання HTML-контенту з textarea та фотографії
-    const textarea = document.querySelector('#newsForm textarea');
-    const fileInput = document.querySelector('#newsPhoto');
-    const fileInputInArticle = document.querySelector('#newsPhotoInArticle');
-    let htmlContent = '';
+    // Збираємо HTML-контент параграфів
+    var paragraphs = document.querySelectorAll('.newsParagraph');
+    paragraphs.forEach(function(paragraph) {
+        htmlContent += '<p class="card-text paragraphInArticle">' + paragraph.value + '</p>';
+    });
 
-    // Додавання тексту з textarea до HTML-контенту
-    htmlContent += `<p class="card-text">${textarea.value}</p>`;
+    // Збираємо HTML-контент фотографій
+    var photos = document.querySelectorAll('.newsPhotoInArticle');
+    photos.forEach(function(photo) {
+        // Додамо обгортку для фото
+        htmlContent += '<img src="' + URL.createObjectURL(photo.files[0]) + '" class="img-fluid mb-3 newsPhotoInArticle" alt="Uploaded Image">';
+    });
 
-    // Додавання фотографії з поля "Фотографія" до FormData, але не до HTML-контенту
-    const file = fileInput.files[0];
-    if (file) {
-        formData.append('image', file);
-    }
-
-    // Додавання фотографії з поля "Фотографія поста" до FormData та HTML-контенту
-    const fileInArticle = fileInputInArticle.files[0];
-    if (fileInArticle) {
-        formData.append('image_in_article', fileInArticle);
-        // Якщо це фотографія, обгорнути тегом <img> з id "newsPhotoInArticle"
-        htmlContent += `<img src="${URL.createObjectURL(fileInArticle)}" class="img-fluid mb-3" id="newsPhotoInArticle" alt="Uploaded Image">`;
-    }
-
-    // Додавання HTML-контенту до FormData
     formData.append('html_content', htmlContent);
+
+    var imageFile = document.querySelector('.newsPhoto').files[0];
+    formData.append('image', imageFile);
 
     // Відправка даних на сервер
     fetch('/add-news/', {
@@ -253,6 +235,13 @@ function addNews() {
         }
     })
     .catch(error => console.error('Помилка:', error));
+}
+
+function deleteField(deleteBtn) {
+    var element = deleteBtn.parentNode;
+    if (element) {
+        element.parentNode.removeChild(element);
+    }
 }
 
 function deleteNews(newsId) {

@@ -166,12 +166,12 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Модальне вікно для додавання новин -->
     <div class="modal fade" id="addNewsModal" tabindex="-1" aria-labelledby="addNewsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="newsForm" enctype="multipart/form-data">
+                <form class="newsForm" enctype="multipart/form-data">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addNewsModalLabel">Додати новину</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -179,19 +179,19 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="newsTitle" class="form-label">Заголовок</label>
-                            <input type="text" class="form-control" id="newsTitle" name="title">
+                            <input type="text" class="form-control newsTitle" name="title">
                         </div>
                         <div class="mb-3">
                             <label for="newsByteContent" class="form-label">Байтовий контент</label>
-                            <input type="text" class="form-control" id="newsByteContent" name="byte_content">
+                            <input type="text" class="form-control newsByteContent" name="byte_content">
                         </div>
                         <div class="mb-3">
                             <label for="newsPhoto" class="form-label">Фотографія поста</label>
-                            <input type="file" class="form-control" id="newsPhoto" name="image">
+                            <input type="file" class="form-control newsPhoto" name="image">
                         </div>
                         <div class="mb-3">
                             <label for="newsAuthor" class="form-label">Автор</label>
-                            <input type="text" class="form-control" id="newsAuthor" name="author">
+                            <input type="text" class="form-control newsAuthor" name="author">
                         </div>
                         <div class="mb-3" id="newsHtmlContent">
                             <!-- Тут будуть додані параграфи -->
@@ -216,7 +216,8 @@
                 </form>
             </div>
         </div>
-    </div>  
+    </div>
+
 
     <script src="{% static 'main/js/admin-panel.js' %}"></script>
     <!-- Bootstrap JS -->
