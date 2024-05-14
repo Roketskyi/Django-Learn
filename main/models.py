@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+from django.urls import reverse
 
 class Base(models.Model):
     id = models.AutoField(primary_key=True)
@@ -28,3 +30,16 @@ class News(models.Model):
     class Meta:
         verbose_name = 'Новину'
         verbose_name_plural = 'Новини'
+
+class Comment(models.Model):
+    user = models.ForeignKey(Base, on_delete=models.CASCADE)  # Змінюємо ForeignKey на вашу модель користувача
+    news = models.ForeignKey('News', on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
+    def __str__(self):
+        return f'Comment by {self.user} on {self.news}'
+
+    def get_absolute_url(self):
+        return reverse('comment_detail', kwargs={'pk': self.pk})

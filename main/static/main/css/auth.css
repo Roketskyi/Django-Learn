@@ -23,3 +23,5 @@ input[type="search"]::-webkit-search-cancel-button {
 .panel h4 {
     text-align: center;
 }
+
+.link-muted { color: #aaa; } .link-muted:hover { color: #1266f1; }

@@ -5,7 +5,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
 from django.core import serializers
-from .models import News, Base
+from .models import News, Base, Comment
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 
@@ -280,3 +280,41 @@ class UpdateUserPasswordView(View):
             return JsonResponse({'success': 'Пароль успішно оновлено'}, status=200)
         else:
             return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)
+
+class AddCommentView(View):
+    @csrf_exempt
+    def post(self, request, pk):
+        if request.method == 'POST':
+            user_id = request.session.get('user_id')
+            content = request.POST.get('content')
+
+            if not user_id:
+                return JsonResponse({'error': 'Please log in to leave a comment.'}, status=401)
+
+            if not content:
+                return JsonResponse({'error': 'Please enter comment text.'}, status=400)
+
+            try:
+                user = Base.objects.get(pk=user_id)
+            except Base.DoesNotExist:
+                return JsonResponse({'error': 'User does not exist.'}, status=404)
+
+            news_item = get_object_or_404(News, pk=pk)
+
+            comment = Comment.objects.create(user=user, news=news_item, content=content)
+            comment.save()
+
+            return JsonResponse({'success': 'Comment added successfully.'}, status=201)
+
+from django.views.generic import DetailView
+
+class NewsDetailView(DetailView):
+    model = News
+    template_name = 'main/news_detail.html'  
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        news_item = self.get_object()
+        context['comments'] = Comment.objects.filter(news=news_item)
+        context['news_item'] = news_item
+        return context

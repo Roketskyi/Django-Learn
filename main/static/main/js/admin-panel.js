@@ -282,7 +282,6 @@ function updateNews(newsId) {
     .catch(error => console.error('Помилка:', error));
 }
 
-
 function deleteField(deleteBtn) {
     var element = deleteBtn.parentNode;
     if (element) {
@@ -313,6 +312,56 @@ function deleteNews(newsId) {
         console.error('Помилка:', error);
         swal("Помилка!", error.message, "error");
     });
+}
+
+function addComment() {
+    const newsId = document.getElementById('newsId').value; 
+    const comment = document.getElementById('comment').value; 
+
+    fetch(`/news/${newsId}/add-comment/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ content: comment }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadComments(newsId);
+            document.getElementById('comment').value = '';
+        } else if (data.error) {
+            console.error(data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function loadComments(postId) {
+// Відправка запиту на сервер для отримання списку коментарів для певного допису
+fetch(`/get-comments/${postId}/`, {
+    method: 'GET'
+})
+.then(response => response.json())
+.then(data => {
+    // Отримання контейнера для коментарів
+    const commentsContainer = document.getElementById('commentsContainer');
+    // Очищення контейнера перед додаванням нових коментарів
+    commentsContainer.innerHTML = '';
+
+    // Додавання кожного коментаря до контейнера
+    data.forEach(comment => {
+        const commentElement = document.createElement('div');
+        commentElement.classList.add('comment');
+        commentElement.innerHTML = `
+            <div class="comment-author">${comment.author}</div>
+            <div class="comment-text">${comment.text}</div>
+        `;
+        commentsContainer.appendChild(commentElement);
+    });
+})
+.catch(error => console.error('Помилка:', error));
 }
 
 function saveChanges() {
