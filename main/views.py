@@ -9,6 +9,7 @@ from .models import News, Base, Comment
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.views.generic import DetailView
+from django.urls import reverse
 
 class IndexView(View):
     def get(self, request):
@@ -274,17 +275,16 @@ class SettingsProfileView(View):
         user_id = request.session.get('user_id')
         user = get_object_or_404(Base, id=user_id)
 
-        new_login = request.POST.get('login')
         new_avatar = request.FILES.get('avatar')
 
-        if new_login:
-            user.login = new_login
         if new_avatar:
+            user.delete_old_avatar()  # Видалення попередньої аватарки
             user.avatar = new_avatar
+            user.save()
 
-        user.save()
-
-        return JsonResponse({'success': 'Профіль успішно оновлено'})
+            return JsonResponse({'success': 'Фотографію профілю успішно змінено', 'redirect': reverse('settings_profile')})
+        else:
+            return JsonResponse({'error': 'Файл фотографії не був переданий'}, status=400)
     
 class UpdateUserProfileView(View):
     @csrf_exempt
@@ -316,7 +316,6 @@ class UpdateUserPasswordView(View):
 
 
 
-
 class AddCommentView(View):
     @csrf_exempt
     def post(self, request, pk):
@@ -325,22 +324,22 @@ class AddCommentView(View):
             content = request.POST.get('content')
 
             if not user_id:
-                return JsonResponse({'error': 'Please log in to leave a comment.'}, status=401)
+                return JsonResponse({'error': 'Потрібно авторизуватись, щоб залишити коментар.'}, status=401)
 
             if not content:
-                return JsonResponse({'error': 'Please enter comment text.'}, status=400)
+                return JsonResponse({'error': 'Будь ласка, введіть текст коментаря.'}, status=400)
 
             try:
                 user = Base.objects.get(pk=user_id)
             except Base.DoesNotExist:
-                return JsonResponse({'error': 'User does not exist.'}, status=404)
+                return JsonResponse({'error': 'Користувач не існує.'}, status=404)
 
             news_item = get_object_or_404(News, pk=pk)
 
             comment = Comment.objects.create(user=user, news=news_item, content=content)
             comment.save()
 
-            return JsonResponse({'success': 'Comment added successfully.'}, status=201)
+            return JsonResponse({'success': 'Коментар успішно додано.'}, status=201)
 
 class NewsDetailView(DetailView):
     model = News

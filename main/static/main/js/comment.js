@@ -27,6 +27,8 @@ function addComment(formData, newsId) {
     .then(response => {
         if (response.ok) {
             window.location.reload();
+        } else if (response.status === 401) {
+            throw new Error('Потрібно авторизуватись, щоб залишити коментар.');
         } else {
             throw new Error('Виникла помилка при додаванні коментаря.');
         }

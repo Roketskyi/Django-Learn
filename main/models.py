@@ -22,7 +22,13 @@ class Base(models.Model):
         else:
             return os.path.join('/media', 'avatars/default.png')
 
-
+    def delete_old_avatar(self):
+        if self.avatar and self.avatar.name != 'avatars/default.png':
+            if os.path.isfile(self.avatar.path):
+                os.remove(self.avatar.path)
+            self.avatar = 'avatars/default.png'  # Заміна на стандартну аватарку
+            self.save()
+            
     def update_login(self, new_login):
         self.login = new_login
         self.save()

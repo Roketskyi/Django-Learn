@@ -4,10 +4,11 @@
     right: 15px;
     color: red;
     cursor: pointer;
-    opacity: 0; /* Спочатку не відображати */
-    transition: opacity 0.3s ease-in-out; /* Плавне зникання/появлення */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
 .comment-card:hover .delete-field {
-    opacity: 1; /* Показувати хрестик при наведенні на коментар */
-  }
+    opacity: 1;
+}
+

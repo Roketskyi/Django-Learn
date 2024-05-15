@@ -6,17 +6,25 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container mt-4">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <h2 class="mb-4">Налаштування профілю</h2>
-                <div class="d-flex justify-content-center mb-4">
-                    <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'path/to/default/profile/image.jpg' %}{% endif %}" alt="Profile Image" class="rounded-circle profile-img" id="profileImgPreview">
-                </div>
-                <div class="mb-4">
-                    <label for="profileImg" class="form-label">Змінити фото профілю</label>
-                    <input type="file" class="form-control" id="profileImg" accept="image/*" onchange="previewProfileImage(event)">
-                </div>
+            <div class="col-md-6">
+                <h2 class="mb-4">Налаштування фото профілю</h2>
+                <form id="updateAvatarForm" enctype="multipart/form-data" method="post"> <!-- Зміна методу на post -->
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center mb-4">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'path/to/default/profile/image.jpg' %}{% endif %}" alt="Profile Image" class="rounded-circle profile-img" id="profileImgPreview" width="200" height="200">
+                    </div>
+                    <div class="mb-4">
+                        <label for="avatar" class="form-label">Змінити фото профілю</label>
+                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*" onchange="previewProfileImage(event)">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2" id="saveProfileImgBtn">Зберегти фотографію</button> <!-- Видалення стилю display: none; -->
+                </form>
+            </div>
+            
+            <div class="col-md-6">
+                <h2 class="mb-4">Решта налаштувань</h2>
                 <p>Вітаємо {{ user_login }} у налаштуваннях!</p>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeLoginModal">Змінити логін</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Змінити пароль</button>
@@ -100,21 +108,4 @@
     </div>
 
     <script src="{% static 'main/js/settings_profile.js' %}"></script>
-    <script>
-            function testt(callback) {
-                swal({
-                    title: "Ви впевнені?",
-                    text: "Ви не зможете відновити цей об'єкт!",
-                    icon: "warning",
-                    buttons: ["Скасувати", "Так, видалити!"],
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        if (callback) {
-                            callback();
-                        }
-                    }
-                });
-            }
-    </script>
 {% endblock %}
