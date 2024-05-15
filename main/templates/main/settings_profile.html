@@ -10,6 +10,14 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h2 class="mb-4">Налаштування профілю</h2>
+                <div class="d-flex justify-content-center mb-4">
+                    <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'path/to/default/profile/image.jpg' %}{% endif %}" alt="Profile Image" class="rounded-circle profile-img" id="profileImgPreview">
+                </div>
+                <div class="mb-4">
+                    <label for="profileImg" class="form-label">Змінити фото профілю</label>
+                    <input type="file" class="form-control" id="profileImg" accept="image/*" onchange="previewProfileImage(event)">
+                </div>
+                <p>Вітаємо {{ user_login }} у налаштуваннях!</p>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeLoginModal">Змінити логін</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Змінити пароль</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Змінити Email</button>

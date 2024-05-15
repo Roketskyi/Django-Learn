@@ -39,8 +39,7 @@
             <div class="card mb-3 comment-card">
               <div class="card-body">
                 <div class="d-flex">
-                  <img class="rounded-circle shadow-1-strong me-3"
-                    src="{% static 'path/to/default/avatar.png' %}" alt="avatar" width="65" height="65">
+                  <img class="rounded-circle shadow-1-strong me-3" src="{{ comment.user.avatar.url }}" alt="avatar" width="65" height="65">
                   <div>
                     <h5 class="card-title">{{ comment.user.login }}</h5>
                     <p class="card-text"><small class="text-muted">{{ comment.created_at }}</small></p>

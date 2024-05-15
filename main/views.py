@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
@@ -8,20 +8,25 @@ from django.core import serializers
 from .models import News, Base, Comment
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
+from django.views.generic import DetailView
 
 class IndexView(View):
     def get(self, request):
         news = News.objects.all()
-        return render(request, 'main/index.html', {'title': 'Головна сторінка сайту', 'News': news })
+        user_id = request.session.get('user_id')
+        user = None
+        if user_id:
+            user = Base.objects.get(pk=user_id)
+        return render(request, 'main/index.html', {'title': 'Головна сторінка сайту', 'News': news, 'user': user})
 
 class AboutView(View):
     def get(self, request):
-        return render(request, 'main/about.html')
+        user_id = request.session.get('user_id')
+        user = None
+        if user_id:
+            user = Base.objects.get(pk=user_id)
 
-class NewsDetailView(View):
-    def get(self, request, pk):
-        news_item = get_object_or_404(News, pk=pk)
-        return render(request, 'main/news_detail.html', {'news_item': news_item})
+        return render(request, 'main/about.html', {'user': user})
 
 class NewsListView(View):
     def get(self, request):
@@ -73,8 +78,13 @@ class UserRegisterView(View):
 
 class AdminPanelView(View):
     def get(self, request):
-        if request.session.get('user_id') and request.session.get('user_role') == '4':
-            return render(request, 'main/admin_panel.html')
+        user_id = request.session.get('user_id')
+        user = None
+        if user_id:
+            user = Base.objects.get(pk=user_id)
+        
+        if user_id and request.session.get('user_role') == '4':
+            return render(request, 'main/admin_panel.html', {'user': user})
         else:
             return redirect('/')
 
@@ -110,7 +120,6 @@ class DeleteUserView(View):
                 return JsonResponse({'error': 'Користувача не знайдено'}, status=404)  # Змінено текст повідомлення
         else:
             return JsonResponse({'error': 'Недозволено'}, status=401)  # Змінено текст повідомлення
-
 
 class UpdateUserView(View):
     @csrf_exempt
@@ -253,8 +262,29 @@ class DeleteNewsView(View):
 
 class SettingsProfileView(View):
     def get(self, request):
-        # Логіка для отримання сторінки налаштувань профілю
-        return render(request, 'main/settings_profile.html')
+        user_id = request.session.get('user_id')
+        user = None
+        if user_id:
+            user = Base.objects.get(pk=user_id)
+
+        return render(request, 'main/settings_profile.html', {'user': user})
+
+    @csrf_exempt
+    def post(self, request):
+        user_id = request.session.get('user_id')
+        user = get_object_or_404(Base, id=user_id)
+
+        new_login = request.POST.get('login')
+        new_avatar = request.FILES.get('avatar')
+
+        if new_login:
+            user.login = new_login
+        if new_avatar:
+            user.avatar = new_avatar
+
+        user.save()
+
+        return JsonResponse({'success': 'Профіль успішно оновлено'})
     
 class UpdateUserProfileView(View):
     @csrf_exempt
@@ -282,6 +312,11 @@ class UpdateUserPasswordView(View):
         else:
             return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)
 
+
+
+
+
+
 class AddCommentView(View):
     @csrf_exempt
     def post(self, request, pk):
@@ -307,8 +342,6 @@ class AddCommentView(View):
 
             return JsonResponse({'success': 'Comment added successfully.'}, status=201)
 
-from django.views.generic import DetailView
-
 class NewsDetailView(DetailView):
     model = News
     template_name = 'main/news_detail.html'  
@@ -318,10 +351,17 @@ class NewsDetailView(DetailView):
         news_item = self.get_object()
         context['comments'] = Comment.objects.filter(news=news_item)
         context['news_item'] = news_item
+
+        # Отримання інформації про користувача з сесії, якщо він увійшов у систему
+        user_id = self.request.session.get('user_id')
+        user = None
+        if user_id:
+            user = Base.objects.get(pk=user_id)
+        
+        # Передача інформації про користувача у контекст шаблону
+        context['user'] = user
         return context
     
-from django.http import HttpResponseForbidden
-
 class DeleteCommentView(View):
     @csrf_exempt
     def delete(self, request, comment_id):

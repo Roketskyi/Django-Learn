@@ -34,7 +34,11 @@
                     {% if request.session.user_id %}
                     <div class="dropdown text-end">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZJg6b3NaaTsZ7yztN39I8jq53nuPbs2TJPwG6vmKf5wrseAIQX8JaLQLp_drxpCBQRMM&usqp=CAU" alt="mdo" width="32" height="32" class="rounded-circle">
+                            {% if user %}
+                                {% with avatar=user.avatar %}
+                                    <img src="{{ avatar.url }}" alt="Avatar" width="32" height="32" class="rounded-circle">
+                                {% endwith %}
+                            {% endif %}
                         </a>
                         <ul class="dropdown-menu text-small" style="position: absolute;" data-bs-theme="light">
                             {% if request.session.user_role == '4' %}

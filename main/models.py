@@ -1,6 +1,12 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+import os
+
+def user_avatar_path(instance, filename):
+    # Повертаємо шлях для зберігання аватарки користувача
+    user_id = instance.id
+    return os.path.join('avatars', str(user_id), filename)
 
 class Base(models.Model):
     id = models.AutoField(primary_key=True)
@@ -8,6 +14,14 @@ class Base(models.Model):
     password = models.CharField(max_length=100)
     email = models.EmailField()
     role = models.CharField(max_length=50)
+    avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default.png')
+
+    def get_avatar_path(self):
+        if self.avatar:
+            return os.path.join('/media', str(self.avatar))
+        else:
+            return os.path.join('/media', 'avatars/default.png')
+
 
     def update_login(self, new_login):
         self.login = new_login
