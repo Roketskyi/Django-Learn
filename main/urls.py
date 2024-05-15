@@ -23,6 +23,7 @@ from .views import (
     GetNewsDetailView,
     DeleteNewsView,
     AddCommentView,
+    DeleteCommentView,
 )
 
 from django.conf import settings
@@ -35,6 +36,7 @@ urlpatterns = [
     path('news/', NewsListView.as_view(), name='news_list'),
 
     path('news/<int:pk>/add-comment/', AddCommentView.as_view(), name='add-comment'),
+    path('delete-comment/<int:comment_id>/', DeleteCommentView.as_view(), name='delete-comment'),
     path('news/<int:pk>/', NewsDetailView.as_view(), name='news-detail'),
 
     path('login/', UserLoginView.as_view(), name='login'),

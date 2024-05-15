@@ -100,16 +100,17 @@ class GetUserView(View):
 
 class DeleteUserView(View):
     @csrf_exempt
-    def delete(self, request, news_id):
+    def delete(self, request, user_id):  # Виправлений аргумент user_id
         if request.session.get('user_role') == '4':  # Перевірка чи є користувач адміністратором
             try:
-                news = News.objects.get(id=news_id)
-                news.delete()
-                return JsonResponse({'success': 'Новину видалено'}, status=200)
-            except News.DoesNotExist:
-                return JsonResponse({'error': 'Новину не знайдено'}, status=404)
+                user = Base.objects.get(id=user_id)  # Змінено news на user
+                user.delete()
+                return JsonResponse({'success': 'Користувача видалено'}, status=200)  # Змінено текст повідомлення
+            except Base.DoesNotExist:  # Змінено News.DoesNotExist на Base.DoesNotExist
+                return JsonResponse({'error': 'Користувача не знайдено'}, status=404)  # Змінено текст повідомлення
         else:
-            return JsonResponse({'error': 'Недозволено'}, status=401)
+            return JsonResponse({'error': 'Недозволено'}, status=401)  # Змінено текст повідомлення
+
 
 class UpdateUserView(View):
     @csrf_exempt
@@ -318,3 +319,18 @@ class NewsDetailView(DetailView):
         context['comments'] = Comment.objects.filter(news=news_item)
         context['news_item'] = news_item
         return context
+    
+from django.http import HttpResponseForbidden
+
+class DeleteCommentView(View):
+    @csrf_exempt
+    def delete(self, request, comment_id):
+        if request.session.get('user_role') in ['3', '4']:  # Перевірка чи є користувач адміністратором або модератором
+            try:
+                comment = Comment.objects.get(id=comment_id)
+                comment.delete()
+                return JsonResponse({'success': 'Коментар успішно видалено'}, status=200)
+            except Comment.DoesNotExist:
+                return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
+        else:
+            return HttpResponseForbidden("Ви не маєте права на видалення коментарів")
