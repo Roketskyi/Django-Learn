@@ -52,11 +52,17 @@ class News(models.Model):
         verbose_name_plural = 'Новини'
 
 class Comment(models.Model):
-    user = models.ForeignKey(Base, on_delete=models.CASCADE)  # Змінюємо ForeignKey на вашу модель користувача
+    user = models.ForeignKey(Base, on_delete=models.CASCADE)
     news = models.ForeignKey('News', on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
+    reply_count = models.PositiveIntegerField(default=0)
+    liked_by = models.ForeignKey(Base, related_name='liked_comments', on_delete=models.SET_NULL, blank=True, null=True)
+    disliked_by = models.ForeignKey(Base, related_name='disliked_comments', on_delete=models.SET_NULL, blank=True, null=True)
+
 
     def __str__(self):
         return f'Comment by {self.user} on {self.news}'

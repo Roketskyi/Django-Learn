@@ -348,7 +348,8 @@ class NewsDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         news_item = self.get_object()
-        context['comments'] = Comment.objects.filter(news=news_item)
+        comments = Comment.objects.filter(news=news_item).order_by('created_at')  # Сортування за created_at
+        context['comments'] = comments
         context['news_item'] = news_item
 
         # Отримання інформації про користувача з сесії, якщо він увійшов у систему
@@ -373,3 +374,57 @@ class DeleteCommentView(View):
                 return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
         else:
             return HttpResponseForbidden("Ви не маєте права на видалення коментарів")
+        
+class UpdateLikesView(View):
+    @csrf_exempt
+    def post(self, request, comment_id):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return JsonResponse({'error': 'Потрібно увійти, щоб голосувати.'}, status=401)
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
+
+        user = Base.objects.get(pk=user_id)
+        if comment.disliked_by == user:
+            comment.dislikes -= 1
+            comment.disliked_by = None
+
+        if comment.liked_by == user:
+            comment.likes -= 1
+            comment.liked_by = None
+        else:
+            comment.likes += 1
+            comment.liked_by = user
+
+        comment.save()
+        return JsonResponse({'likes': comment.likes, 'dislikes': comment.dislikes}, status=200)
+
+class UpdateDislikesView(View):
+    @csrf_exempt
+    def post(self, request, comment_id):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return JsonResponse({'error': 'Потрібно увійти, щоб голосувати.'}, status=401)
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
+
+        user = Base.objects.get(pk=user_id)
+        if comment.liked_by == user:
+            comment.likes -= 1
+            comment.liked_by = None
+
+        if comment.disliked_by == user:
+            comment.dislikes -= 1
+            comment.disliked_by = None
+        else:
+            comment.dislikes += 1
+            comment.disliked_by = user
+
+        comment.save()
+        return JsonResponse({'likes': comment.likes, 'dislikes': comment.dislikes}, status=200)

@@ -21,6 +21,7 @@
       <h4>Додати коментар</h4>
       <form id="comment-form" method="post" action="{% url 'add-comment' pk=news_item.pk %}">
         {% csrf_token %}
+        <input type="hidden" name="parent_comment_id" id="parent-comment-id"> <!-- Додано сховане поле для збереження ID батьківського коментаря -->
         <div class="mb-3">
           <label for="comment-content" class="form-label">Ваш коментар</label>
           <textarea class="form-control" id="comment-content" name="content" rows="3" placeholder="Додайте коментар..."></textarea>
@@ -28,7 +29,6 @@
         <button type="submit" class="btn btn-primary">Додати коментар</button>
       </form>
     </div>
-
 
     <!-- Відображення коментарів -->
     <section>
@@ -40,7 +40,7 @@
               <div class="card-body">
                 <div class="d-flex">
                   <img class="rounded-circle shadow-1-strong me-3" src="{{ comment.user.avatar.url }}" alt="avatar" width="65" height="65">
-                  <div class="flex-grow-1"> <!-- Додано клас flex-grow-1 для розтягнення блоку на всю доступну ширину -->
+                  <div class="flex-grow-1">
                     <h5 class="card-title">{{ comment.user.login }}</h5>
                     <p class="card-text"><small class="text-muted">{{ comment.created_at }}</small></p>
                     <p class="card-text">{{ comment.content }}</p>
@@ -50,11 +50,16 @@
                     {% endif %}
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center">
-                        <a href="#!" class="link-muted me-2 text-decoration-none"><i class="fas fa-thumbs-up me-1"></i>132</a>
-                        <a href="#!" class="link-muted text-decoration-none"><i class="fas fa-thumbs-down me-1"></i>15</a>
+                        <a href="" class="like-btn link-muted me-2 text-decoration-none {% if comment.liked_by_id == user.id %}active{% endif %}" data-comment-id="{{ comment.id }}">
+                          <i class="fas fa-thumbs-up me-1"></i><span class="likes-count">{{ comment.likes }}</span>
+                        </a>
+                      
+                        <a href="" class="dislike-btn link-muted me-2 text-decoration-none {% if comment.disliked_by_id == user.id %}active{% endif %}" data-comment-id="{{ comment.id }}">
+                          <i class="fas fa-thumbs-down me-1"></i><span class="dislikes-count">{{ comment.dislikes }}</span>
+                        </a>                      
                       </div>
                       <div class="ms-auto"> <!-- Додано клас ms-auto для вирівнювання праворуч -->
-                        <a href="#!" class="link-muted text-decoration-none"><i class="fas fa-reply me-1"></i> Відповісти</a>
+                        <a href="" class="link-muted text-decoration-none reply-btn"><i class="fas fa-reply me-1"></i> Відповісти</a>
                       </div>
                     </div>
                   </div>
