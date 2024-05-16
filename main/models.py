@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+import time
 import os
 
 def user_avatar_path(instance, filename):
-    # Повертаємо шлях для зберігання аватарки користувача
     user_id = instance.id
     return os.path.join('avatars', str(user_id), filename)
 
@@ -36,20 +36,21 @@ class Base(models.Model):
     def __str__(self):
         return self.login
 
+def news_image_path(instance, filename):
+    # Generate unique folder name based on current timestamp
+    folder_name = str(instance.id)  # Використовуємо унікальний ідентифікатор
+    return os.path.join('news_images', folder_name, filename)
+
 class News(models.Model):
     title = models.CharField(max_length=255)
     byte_content = models.TextField()  # Текст без форматування
     html_content = models.TextField()  # HTML-форматований текст новини
     author = models.ForeignKey('Base', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='news_images/')
+    image = models.ImageField(upload_to=news_image_path)
 
     def __str__(self):
         return self.title
-    
-    class Meta:
-        verbose_name = 'Новину'
-        verbose_name_plural = 'Новини'
 
 class Comment(models.Model):
     user = models.ForeignKey(Base, on_delete=models.CASCADE)

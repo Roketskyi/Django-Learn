@@ -140,6 +140,8 @@ function loadNews() {
     document.getElementById('usersTableContainer').style.display = 'none';
 }
 
+
+
 function addTextarea() {
     var textareaDiv = document.createElement('div');
     textareaDiv.classList.add('mb-3', 'position-relative');
@@ -243,6 +245,8 @@ function addNews() {
     })
     .catch(error => console.error('Помилка:', error));
 }
+
+
 
 function updateNews(newsId) {
     fetch(`/get-news/${newsId}/`, { method: 'GET' })
