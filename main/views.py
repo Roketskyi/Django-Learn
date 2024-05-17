@@ -286,10 +286,12 @@ class SettingsProfileView(View):
         else:
             return JsonResponse({'error': 'Файл фотографії не був переданий'}, status=400)
     
+from django.utils.decorators import method_decorator
+
 class UpdateUserProfileView(View):
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request, user_id):
-        new_login = request.POST.get('login')
+        new_login = request.POST.get('newLogin')
         user = get_object_or_404(Base, id=user_id)
 
         if new_login:
@@ -299,20 +301,40 @@ class UpdateUserProfileView(View):
             return JsonResponse({'error': 'Новий логін не може бути пустим'}, status=400)
 
 class UpdateUserPasswordView(View):
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request, user_id):
         old_password = request.POST.get('oldPassword')
         new_password = request.POST.get('newPassword')
         user = get_object_or_404(Base, id=user_id)
 
-        if user.check_password(old_password):  # Перевірка старого паролю
-            user.set_password(new_password)  # Встановлення нового паролю
+        if user.check_password(old_password):
+            user.set_password(new_password)
             user.save()
             return JsonResponse({'success': 'Пароль успішно оновлено'}, status=200)
         else:
             return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)
 
+import json
 
+class UpdateUserEmailView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            new_email = data.get('newEmail')
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        user = get_object_or_404(Base, id=user_id)
+
+        if new_email:
+            user.update_email(new_email)
+            return JsonResponse({'success': 'Email успішно оновлено'}, status=200)
+        else:
+            return JsonResponse({'error': 'Новий email не може бути пустим'}, status=400)
 
 
 
@@ -348,7 +370,8 @@ class NewsDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         news_item = self.get_object()
-        context['comments'] = Comment.objects.filter(news=news_item)
+        comments = Comment.objects.filter(news=news_item).order_by('created_at')  # Сортування за created_at
+        context['comments'] = comments
         context['news_item'] = news_item
 
         # Отримання інформації про користувача з сесії, якщо він увійшов у систему
@@ -373,3 +396,57 @@ class DeleteCommentView(View):
                 return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
         else:
             return HttpResponseForbidden("Ви не маєте права на видалення коментарів")
+        
+class UpdateLikesView(View):
+    @csrf_exempt
+    def post(self, request, comment_id):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return JsonResponse({'error': 'Потрібно увійти, щоб голосувати.'}, status=401)
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
+
+        user = Base.objects.get(pk=user_id)
+        if comment.disliked_by == user:
+            comment.dislikes -= 1
+            comment.disliked_by = None
+
+        if comment.liked_by == user:
+            comment.likes -= 1
+            comment.liked_by = None
+        else:
+            comment.likes += 1
+            comment.liked_by = user
+
+        comment.save()
+        return JsonResponse({'likes': comment.likes, 'dislikes': comment.dislikes}, status=200)
+
+class UpdateDislikesView(View):
+    @csrf_exempt
+    def post(self, request, comment_id):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return JsonResponse({'error': 'Потрібно увійти, щоб голосувати.'}, status=401)
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({'error': 'Коментар не знайдено'}, status=404)
+
+        user = Base.objects.get(pk=user_id)
+        if comment.liked_by == user:
+            comment.likes -= 1
+            comment.liked_by = None
+
+        if comment.disliked_by == user:
+            comment.dislikes -= 1
+            comment.disliked_by = None
+        else:
+            comment.dislikes += 1
+            comment.disliked_by = user
+
+        comment.save()
+        return JsonResponse({'likes': comment.likes, 'dislikes': comment.dislikes}, status=200)

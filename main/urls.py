@@ -24,6 +24,9 @@ from .views import (
     DeleteNewsView,
     AddCommentView,
     DeleteCommentView,
+    UpdateLikesView,
+    UpdateDislikesView,
+    UpdateUserEmailView,
 )
 
 from django.conf import settings
@@ -36,8 +39,10 @@ urlpatterns = [
     path('news/', NewsListView.as_view(), name='news_list'),
 
     path('news/<int:pk>/add-comment/', AddCommentView.as_view(), name='add-comment'),
-    path('delete-comment/<int:comment_id>/', DeleteCommentView.as_view(), name='delete-comment'),
     path('news/<int:pk>/', NewsDetailView.as_view(), name='news-detail'),
+    path('delete-comment/<int:comment_id>/', DeleteCommentView.as_view(), name='delete-comment'),
+    path('update-likes/<int:comment_id>/', UpdateLikesView.as_view(), name='update_likes'),
+    path('update-dislikes/<int:comment_id>/', UpdateDislikesView.as_view(), name='update_dislikes'),
 
     path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', UserLogoutView.as_view(), name='user_logout'),
@@ -62,5 +67,5 @@ urlpatterns = [
     path('settings-profile/', SettingsProfileView.as_view(), name='settings_profile'),  # Доданий URL-шлях для налаштувань профілю
     path('update-login/<int:user_id>/', UpdateUserProfileView.as_view(), name='update_login'),
     path('update-password/<int:user_id>/', UpdateUserPasswordView.as_view(), name='update_password'),
-
+    path('update-email/<int:user_id>/', UpdateUserEmailView.as_view(), name='update_email'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

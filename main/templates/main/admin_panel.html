@@ -42,11 +42,10 @@
                         </a>
                         <ul class="dropdown-menu text-small" style="position: absolute;" data-bs-theme="light">
                             {% if request.session.user_role == '4' %}
-                            <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_panel' %}">Панель Адміністратора</a></li>
+                                <li><hr class="dropdown-divider"></li>
                             {% endif %}
-                            <li><a class="dropdown-item" href="#">Профіль</a></li>
-                            <li><a class="dropdown-item" href="#">Налаштування</a></li>
+                            <li><a class="dropdown-item" href="{% url 'settings_profile' %}">Налаштування</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'user_logout' %}">Вийти</a></li>
                         </ul>
