@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-import time
 import os
 
 def user_avatar_path(instance, filename):

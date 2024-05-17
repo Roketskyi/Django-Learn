@@ -211,10 +211,10 @@ function addNews() {
         var index = element.substring(element.length - 1);
         if (element.startsWith('textarea')) {
             var paragraph = document.getElementById('newsParagraph' + index);
-            htmlContent += '<p class="card-text paragraphInArticle">' + paragraph.value + '</p>';
+            htmlContent += '<p class="card-text paragraphInArticle" style="font-size: 20px">' + paragraph.value + '</p>';
         } else if (element.startsWith('photo')) {
             var photo = document.getElementById('newsPhoto' + index);
-            htmlContent += '<img src="' + URL.createObjectURL(photo.files[0]) + '" class="img-fluid mb-3 newsPhotoInArticle" alt="Uploaded Image">';
+            htmlContent += '<img src="' + URL.createObjectURL(photo.files[0]) + '" class="img-fluid mb-5 mx-auto d-block newsPhotoInArticle" width="350px" alt="Uploaded Image">';
         }
     });
 

@@ -312,10 +312,6 @@ class UpdateUserPasswordView(View):
         else:
             return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)
 
-
-
-
-
 class AddCommentView(View):
     @csrf_exempt
     def post(self, request, pk):

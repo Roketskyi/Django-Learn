@@ -25,9 +25,7 @@
                 </a>
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/" class="nav-link px-2 text-white">Головна сторінка</a></li>
-                    <li><a href="#" class="nav-link px-2 text-white">Запропонувати новину</a></li>
-                    <li><a href="/about" class="nav-link px-2 text-white">Про нас</a></li>
+                    <!-- <li><a href="/about" class="nav-link px-2 text-white">Про нас</a></li> -->
                 </ul>
                 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search"> </form>
@@ -45,6 +43,7 @@
                                 <li><hr class="dropdown-divider"></li>
                             {% endif %}
                             <li><a class="dropdown-item" href="{% url 'settings_profile' %}">Налаштування</a></li>
+                            <li><a class="dropdown-item" href="{% url 'about' %}">Про нас</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'user_logout' %}">Вийти</a></li>
                         </ul>
