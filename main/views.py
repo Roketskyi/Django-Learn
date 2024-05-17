@@ -286,10 +286,12 @@ class SettingsProfileView(View):
         else:
             return JsonResponse({'error': 'Файл фотографії не був переданий'}, status=400)
     
+from django.utils.decorators import method_decorator
+
 class UpdateUserProfileView(View):
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request, user_id):
-        new_login = request.POST.get('login')
+        new_login = request.POST.get('newLogin')
         user = get_object_or_404(Base, id=user_id)
 
         if new_login:
@@ -299,14 +301,14 @@ class UpdateUserProfileView(View):
             return JsonResponse({'error': 'Новий логін не може бути пустим'}, status=400)
 
 class UpdateUserPasswordView(View):
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request, user_id):
         old_password = request.POST.get('oldPassword')
         new_password = request.POST.get('newPassword')
         user = get_object_or_404(Base, id=user_id)
 
-        if user.check_password(old_password):  # Перевірка старого паролю
-            user.set_password(new_password)  # Встановлення нового паролю
+        if user.check_password(old_password):
+            user.set_password(new_password)
             user.save()
             return JsonResponse({'success': 'Пароль успішно оновлено'}, status=200)
         else:

@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 import os
+from django.contrib.auth.hashers import make_password, check_password
 
 def user_avatar_path(instance, filename):
     user_id = instance.id
@@ -10,7 +11,7 @@ def user_avatar_path(instance, filename):
 class Base(models.Model):
     id = models.AutoField(primary_key=True)
     login = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)  # збільшено до 128 символів для зберігання хешованого паролю
     email = models.EmailField()
     role = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default.png')
@@ -25,12 +26,19 @@ class Base(models.Model):
         if self.avatar and self.avatar.name != 'avatars/default.png':
             if os.path.isfile(self.avatar.path):
                 os.remove(self.avatar.path)
-            self.avatar = 'avatars/default.png'  # Заміна на стандартну аватарку
+            self.avatar = 'avatars/default.png'
             self.save()
             
     def update_login(self, new_login):
         self.login = new_login
         self.save()
+        
+    def set_password(self, new_password):
+        self.password = make_password(new_password)  # Хешуємо новий пароль
+        self.save()
+
+    def check_password(self, password):
+        return check_password(password, self.password)  # Перевіряємо хешований пароль
 
     def __str__(self):
         return self.login
