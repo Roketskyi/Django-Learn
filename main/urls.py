@@ -25,7 +25,8 @@ from .views import (
     AddCommentView,
     DeleteCommentView,
     UpdateLikesView,
-    UpdateDislikesView
+    UpdateDislikesView,
+    UpdateUserEmailView,
 )
 
 from django.conf import settings
@@ -66,5 +67,5 @@ urlpatterns = [
     path('settings-profile/', SettingsProfileView.as_view(), name='settings_profile'),  # Доданий URL-шлях для налаштувань профілю
     path('update-login/<int:user_id>/', UpdateUserProfileView.as_view(), name='update_login'),
     path('update-password/<int:user_id>/', UpdateUserPasswordView.as_view(), name='update_password'),
-
+    path('update-email/<int:user_id>/', UpdateUserEmailView.as_view(), name='update_email'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

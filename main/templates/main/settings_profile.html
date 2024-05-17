@@ -89,19 +89,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="changeEmailForm">
+                    <form id="changeEmailForm" data-user-id="{{ user.id }}">
                         <div class="mb-3">
                             <label for="newEmail" class="form-label">Новий Email</label>
                             <input type="email" class="form-control" id="newEmail" name="newEmail" required>
                         </div>
-                        <button type="button" class="btn btn-primary" id="sendCodeBtn">Відправити код</button>
-                        <div id="codeInputContainer" style="display: none;">
-                            <div class="mb-3">
-                                <label for="code" class="form-label">Код</label>
-                                <input type="text" class="form-control" id="code" name="code" required>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="verifyCodeBtn" style="display: none;">Зберегти</button>
+                        <button type="button" class="btn btn-primary" id="updateEmailBtn">Зберегти</button>
                     </form>
                 </div>
             </div>

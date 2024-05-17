@@ -11,7 +11,7 @@ def user_avatar_path(instance, filename):
 class Base(models.Model):
     id = models.AutoField(primary_key=True)
     login = models.CharField(max_length=100)
-    password = models.CharField(max_length=128)  # збільшено до 128 символів для зберігання хешованого паролю
+    password = models.CharField(max_length=128)
     email = models.EmailField()
     role = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to=user_avatar_path, default='avatars/default.png')
@@ -34,11 +34,15 @@ class Base(models.Model):
         self.save()
         
     def set_password(self, new_password):
-        self.password = make_password(new_password)  # Хешуємо новий пароль
+        self.password = make_password(new_password)
         self.save()
 
     def check_password(self, password):
-        return check_password(password, self.password)  # Перевіряємо хешований пароль
+        return check_password(password, self.password)
+
+    def update_email(self, new_email):
+        self.email = new_email
+        self.save()
 
     def __str__(self):
         return self.login

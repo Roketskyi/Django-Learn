@@ -92,6 +92,35 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    document.getElementById("updateEmailBtn").addEventListener("click", function() {
+        var newEmail = document.getElementById("newEmail").value;
+        var userId = document.getElementById("changeEmailForm").getAttribute('data-user-id');
+    
+        fetch(`/update-email/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ newEmail: newEmail })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                swal("Успішно!", data.success, "success").then(() => {
+                    window.location.reload();
+                });
+            } else {
+                swal("Помилка!", data.error, "error");
+            }
+        })
+        .catch(error => {
+            swal("Помилка!", "Помилка під час відправлення запиту", "error");
+            console.error('Помилка під час відправлення запиту:', error);
+        });
+    });
+    
+
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {

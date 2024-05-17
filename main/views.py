@@ -314,6 +314,30 @@ class UpdateUserPasswordView(View):
         else:
             return JsonResponse({'error': 'Старий пароль неправильний'}, status=400)
 
+import json
+
+class UpdateUserEmailView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            new_email = data.get('newEmail')
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        user = get_object_or_404(Base, id=user_id)
+
+        if new_email:
+            user.update_email(new_email)
+            return JsonResponse({'success': 'Email успішно оновлено'}, status=200)
+        else:
+            return JsonResponse({'error': 'Новий email не може бути пустим'}, status=400)
+
+
+
 class AddCommentView(View):
     @csrf_exempt
     def post(self, request, pk):
